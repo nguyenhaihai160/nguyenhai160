@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>KING PHOTOBOOTH</title>
+<title>👑 KING PHOTOBOOTH</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -97,13 +97,21 @@ canvas{
 background:white;
 }
 
-#themePanel{
-margin-top:25px;
-background:#111;
-padding:20px;
-border-radius:10px;
-width:500px;
+#stickerPanel{
+width:520px;
 margin:auto;
+display:grid;
+grid-template-columns:repeat(10,1fr);
+gap:6px;
+margin-top:10px;
+}
+
+#stickerPanel img{
+width:40px;
+cursor:pointer;
+border-radius:6px;
+background:white;
+padding:2px;
 }
 
 </style>
@@ -137,10 +145,8 @@ margin:auto;
 
 <br>
 
-🧩 Sticker
+📂 Sticker PNG
 <input type="file" accept="image/png" onchange="addSticker(event)">
-
-<br>
 
 <button onclick="deleteSticker()">🗑 XÓA STICKER</button>
 
@@ -159,6 +165,10 @@ margin:auto;
 
 </div>
 
+<h3>🧩 Sticker dễ thương</h3>
+
+<div id="stickerPanel"></div>
+
 <div id="result">
 <canvas id="canvas"></canvas>
 </div>
@@ -169,36 +179,7 @@ margin:auto;
 
 <div id="qr"></div>
 
-<div id="themePanel">
-
-<h3>🎨 CHỈNH GIAO DIỆN</h3>
-
-Màu tiêu đề
-<input type="color" onchange="changeTitleColor(this.value)">
-
-<br>
-
-Màu nút
-<input type="color" onchange="changeButtonColor(this.value)">
-
-<br>
-
-Ảnh nền
-<input type="file" accept="image/*" onchange="changeBackground(event)">
-
-<br>
-
-Font chữ
-
-<select onchange="changeFont(this.value)">
-<option value="Arial">Arial</option>
-<option value="Verdana">Verdana</option>
-<option value="Tahoma">Tahoma</option>
-<option value="Courier New">Courier</option>
-<option value="Times New Roman">Times</option>
-</select>
-
-</div>
+<audio id="snapSound" src="sounds/camera.mp3"></audio>
 
 <script>
 
@@ -218,20 +199,14 @@ let stickers=[]
 let dragging=null
 let selectedSticker=null
 
-/* CAMERA */
-
 navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>{
-video.srcObject=stream
-})
-
-/* FILTER */
+.then(stream=>video.srcObject=stream)
 
 function updateFilter(){
 video.style.filter=document.getElementById("filter").value
 }
 
-/* FRAME MÀU */
+/* FRAME */
 
 let frames=[
 {name:"Frame Trắng",color:"#ffffff"},
@@ -247,19 +222,17 @@ window.onload=function(){
 let select=document.getElementById("frameSelect")
 
 frames.forEach((f,i)=>{
-
-let option=document.createElement("option")
-
-option.value=i
-option.text=f.name
-
-select.appendChild(option)
-
+let op=document.createElement("option")
+op.value=i
+op.text=f.name
+select.appendChild(op)
 })
+
+loadStickers()
 
 }
 
-/* CHỌN FRAME */
+/* FRAME */
 
 function changeFrame(){
 
@@ -277,12 +250,9 @@ framePreview.src=""
 
 }
 
-/* FRAME PNG */
-
 function loadCustomFrame(e){
 
 let file=e.target.files[0]
-if(!file) return
 
 let url=URL.createObjectURL(file)
 
@@ -301,14 +271,31 @@ img.src=url
 
 }
 
-/* STICKER */
+/* STICKER PANEL */
 
-function addSticker(e){
+function loadStickers(){
 
-let file=e.target.files[0]
-if(!file) return
+let panel=document.getElementById("stickerPanel")
 
-let url=URL.createObjectURL(file)
+for(let i=1;i<=100;i++){
+
+let img=document.createElement("img")
+
+img.src="stickers/s"+i+".png"
+
+img.onclick=function(){
+
+addStickerFromURL(img.src)
+
+}
+
+panel.appendChild(img)
+
+}
+
+}
+
+function addStickerFromURL(url){
 
 let img=new Image()
 
@@ -330,7 +317,15 @@ img.src=url
 
 }
 
-/* XÓA STICKER */
+function addSticker(e){
+
+let file=e.target.files[0]
+
+let url=URL.createObjectURL(file)
+
+addStickerFromURL(url)
+
+}
 
 function deleteSticker(){
 
@@ -344,7 +339,7 @@ drawCanvas()
 
 }
 
-/* CHỤP ẢNH */
+/* SHOOT */
 
 async function startShoot(){
 
@@ -368,6 +363,8 @@ createQR()
 
 function takePhoto(){
 
+document.getElementById("snapSound").play()
+
 flash.style.opacity=1
 
 setTimeout(()=>flash.style.opacity=0,200)
@@ -386,8 +383,6 @@ t.drawImage(video,0,0,400,300)
 photos.push(temp)
 
 }
-
-/* VẼ CANVAS */
 
 function drawCanvas(){
 
@@ -412,7 +407,7 @@ stickers.forEach(s=>{
 
 ctx.save()
 
-ctx.translate(s.x+s.size/2 , s.y+s.size/2)
+ctx.translate(s.x+s.size/2,s.y+s.size/2)
 
 ctx.rotate(s.angle)
 
@@ -424,14 +419,14 @@ ctx.restore()
 
 }
 
-/* KÉO STICKER */
+/* DRAG */
 
 canvas.addEventListener("mousedown",e=>{
 
-let rect=canvas.getBoundingClientRect()
+let r=canvas.getBoundingClientRect()
 
-let x=e.clientX-rect.left
-let y=e.clientY-rect.top
+let x=e.clientX-r.left
+let y=e.clientY-r.top
 
 selectedSticker=null
 
@@ -452,22 +447,18 @@ canvas.addEventListener("mousemove",e=>{
 
 if(!dragging) return
 
-let rect=canvas.getBoundingClientRect()
+let r=canvas.getBoundingClientRect()
 
-dragging.x=e.clientX-rect.left-dragging.size/2
-dragging.y=e.clientY-rect.top-dragging.size/2
+dragging.x=e.clientX-r.left-dragging.size/2
+dragging.y=e.clientY-r.top-dragging.size/2
 
 drawCanvas()
 
 })
 
-canvas.addEventListener("mouseup",()=>{
+canvas.addEventListener("mouseup",()=>dragging=null)
 
-dragging=null
-
-})
-
-/* XOAY */
+/* ROTATE */
 
 canvas.addEventListener("contextmenu",e=>{
 
@@ -489,17 +480,10 @@ if(!selectedSticker) return
 
 e.preventDefault()
 
-if(e.deltaY<0){
-
-selectedSticker.size+=10
-
-}else{
-
-selectedSticker.size-=10
+if(e.deltaY<0) selectedSticker.size+=10
+else selectedSticker.size-=10
 
 if(selectedSticker.size<20) selectedSticker.size=20
-
-}
 
 drawCanvas()
 
@@ -526,8 +510,11 @@ clearInterval(timer)
 count.innerText="📸"
 
 setTimeout(()=>{
+
 count.innerText=""
+
 resolve()
+
 },400)
 
 }else{
@@ -567,9 +554,11 @@ function createQR(){
 document.getElementById("qr").innerHTML=""
 
 new QRCode(document.getElementById("qr"),{
+
 text:canvas.toDataURL(),
 width:200,
 height:200
+
 })
 
 }
@@ -577,34 +566,9 @@ height:200
 /* FULLSCREEN */
 
 function enterFullscreen(){
+
 document.documentElement.requestFullscreen()
-}
 
-/* THEME */
-
-function changeTitleColor(c){
-document.getElementById("topbar").style.color=c
-}
-
-function changeButtonColor(c){
-document.querySelectorAll("button").forEach(b=>{
-b.style.background=c
-})
-}
-
-function changeBackground(e){
-
-let file=e.target.files[0]
-
-let url=URL.createObjectURL(file)
-
-document.body.style.backgroundImage="url("+url+")"
-document.body.style.backgroundSize="cover"
-
-}
-
-function changeFont(f){
-document.body.style.fontFamily=f
 }
 
 </script>
