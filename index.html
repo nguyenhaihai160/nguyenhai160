@@ -25,7 +25,6 @@ background:#111;
 padding:15px;
 font-size:32px;
 font-weight:bold;
-letter-spacing:3px;
 }
 
 /* CAMERA */
@@ -72,8 +71,8 @@ width:100%;
 height:100%;
 background:white;
 opacity:0;
-pointer-events:none;
 transition:0.2s;
+pointer-events:none;
 }
 
 /* BUTTON */
@@ -88,8 +87,6 @@ cursor:pointer;
 background:#ff3d6e;
 color:white;
 }
-
-/* CONTROLS */
 
 .controls{
 margin-top:15px;
@@ -155,6 +152,9 @@ padding:8px;
 <option value="">Không frame</option>
 </select>
 
+📂 Frame tự chọn
+<input type="file" accept="image/png" onchange="loadCustomFrame(event)">
+
 <select id="filter" onchange="updateFilter()">
 <option value="none">Không filter</option>
 <option value="grayscale(1)">Đen trắng</option>
@@ -205,20 +205,16 @@ Màu nút
 Font chữ  
 
 <select onchange="changeFont(this.value)">
-
 <option value="Arial">Arial</option>
 <option value="Verdana">Verdana</option>
 <option value="Tahoma">Tahoma</option>
 <option value="Courier New">Courier</option>
 <option value="Times New Roman">Times</option>
-
 </select>
 
 </div>
 
 <script>
-
-/* ELEMENT */
 
 const video=document.getElementById("video")
 const canvas=document.getElementById("canvas")
@@ -274,7 +270,7 @@ select.appendChild(option)
 
 }
 
-/* CHANGE FRAME */
+/* CHỌN FRAME */
 
 function changeFrame(){
 
@@ -302,7 +298,31 @@ img.src=path
 
 }
 
-/* SHOOT */
+/* FRAME TỰ CHỌN */
+
+function loadCustomFrame(e){
+
+let file=e.target.files[0]
+
+if(!file) return
+
+let url=URL.createObjectURL(file)
+
+framePreview.src=url
+
+let img=new Image()
+
+img.onload=function(){
+
+frameImage=img
+
+}
+
+img.src=url
+
+}
+
+/* CHỤP ẢNH */
 
 async function startShoot(){
 
@@ -391,10 +411,8 @@ clearInterval(timer)
 count.innerText="📸"
 
 setTimeout(()=>{
-
 count.innerText=""
 resolve()
-
 },400)
 
 }else{
@@ -453,7 +471,7 @@ document.documentElement.requestFullscreen()
 
 }
 
-/* THEME EDITOR */
+/* THEME */
 
 function changeTitleColor(c){
 
