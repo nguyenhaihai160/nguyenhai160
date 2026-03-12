@@ -3,7 +3,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <title>KING PHOTOBOOTH</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -12,13 +11,11 @@
 
 body{
 margin:0;
+background:#000;
 font-family:Arial;
 color:white;
 text-align:center;
-background:#000;
 }
-
-/* TOP BAR */
 
 #topbar{
 background:#111;
@@ -49,8 +46,6 @@ width:520px;
 pointer-events:none;
 }
 
-/* COUNTDOWN */
-
 #count{
 position:absolute;
 top:45%;
@@ -61,8 +56,6 @@ font-weight:bold;
 color:#00ffd5;
 }
 
-/* FLASH */
-
 #flash{
 position:absolute;
 top:0;
@@ -72,24 +65,28 @@ height:100%;
 background:white;
 opacity:0;
 transition:0.2s;
-pointer-events:none;
 }
 
-/* BUTTON */
+/* CONTROLS */
+
+.controls{
+margin-top:15px;
+}
 
 button{
-padding:14px 30px;
+padding:14px 28px;
 font-size:20px;
 border:none;
 border-radius:12px;
-margin:6px;
+margin:5px;
 cursor:pointer;
 background:#ff3d6e;
 color:white;
 }
 
-.controls{
-margin-top:15px;
+select,input{
+padding:8px;
+margin:4px;
 }
 
 /* RESULT */
@@ -114,14 +111,7 @@ background:#111;
 padding:20px;
 border-radius:10px;
 width:500px;
-margin-left:auto;
-margin-right:auto;
-}
-
-#themePanel input,
-#themePanel select{
-margin:5px;
-padding:8px;
+margin:auto;
 }
 
 </style>
@@ -130,9 +120,7 @@ padding:8px;
 
 <body>
 
-<div id="topbar">
-👑 KING PHOTOBOOTH
-</div>
+<div id="topbar">👑 KING PHOTOBOOTH</div>
 
 <div id="cameraBox">
 
@@ -152,7 +140,7 @@ padding:8px;
 <option value="">Không frame</option>
 </select>
 
-📂 Frame tự chọn
+📂 Frame PNG
 <input type="file" accept="image/png" onchange="loadCustomFrame(event)">
 
 <select id="filter" onchange="updateFilter()">
@@ -166,7 +154,6 @@ padding:8px;
 <br>
 
 <button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
-
 <button onclick="enterFullscreen()">🖥 KIOSK</button>
 
 </div>
@@ -181,7 +168,7 @@ padding:8px;
 
 <div id="qr"></div>
 
-<!-- THEME EDITOR -->
+<!-- THEME -->
 
 <div id="themePanel">
 
@@ -225,6 +212,7 @@ const framePreview=document.getElementById("framePreview")
 
 let photos=[]
 let frameImage=null
+let frameColor=null
 
 /* CAMERA */
 
@@ -241,15 +229,16 @@ video.style.filter=document.getElementById("filter").value
 
 }
 
-/* FRAME LIST */
+/* FRAME MÀU MẶC ĐỊNH */
 
 let frames=[
 
-"frames/frame1.png",
-"frames/frame2.png",
-"frames/frame3.png",
-"frames/frame4.png",
-"frames/frame5.png"
+{name:"Frame Trắng",color:"#ffffff"},
+{name:"Frame Hồng",color:"#ffc0cb"},
+{name:"Frame Đen",color:"#000000"},
+{name:"Frame Vàng",color:"#ffe066"},
+{name:"Frame Xanh",color:"#00c2ff"},
+{name:"Frame Tím",color:"#9b59b6"}
 
 ]
 
@@ -261,8 +250,8 @@ frames.forEach((f,i)=>{
 
 let option=document.createElement("option")
 
-option.value=f
-option.text="Frame "+(i+1)
+option.value=i
+option.text=f.name
 
 select.appendChild(option)
 
@@ -274,31 +263,21 @@ select.appendChild(option)
 
 function changeFrame(){
 
-let path=document.getElementById("frameSelect").value
+let id=document.getElementById("frameSelect").value
 
-if(path==""){
-
-framePreview.src=""
+if(id===""){
+frameColor=null
 frameImage=null
 return
+}
+
+frameColor=frames[id].color
+frameImage=null
+framePreview.src=""
 
 }
 
-framePreview.src=path
-
-let img=new Image()
-
-img.onload=function(){
-
-frameImage=img
-
-}
-
-img.src=path
-
-}
-
-/* FRAME TỰ CHỌN */
+/* FRAME PNG */
 
 function loadCustomFrame(e){
 
@@ -315,6 +294,7 @@ let img=new Image()
 img.onload=function(){
 
 frameImage=img
+frameColor=null
 
 }
 
@@ -373,8 +353,17 @@ let h=photos.length*310+40
 canvas.width=w
 canvas.height=h
 
+if(frameColor){
+
+ctx.fillStyle=frameColor
+ctx.fillRect(0,0,w,h)
+
+}else{
+
 ctx.fillStyle="white"
 ctx.fillRect(0,0,w,h)
+
+}
 
 for(let i=0;i<photos.length;i++){
 
@@ -494,7 +483,6 @@ let file=e.target.files[0]
 let url=URL.createObjectURL(file)
 
 document.body.style.backgroundImage="url("+url+")"
-
 document.body.style.backgroundSize="cover"
 
 }
