@@ -1,530 +1,127 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-
-<meta charset="UTF-8">
-<title>KING PHOTOBOOTH</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<style>
-
-body{
-margin:0;
-font-family:Arial;
-color:white;
-text-align:center;
-background:#000;
-overflow:hidden;
-}
-
-/* TOP BAR */
-
-#topbar{
-background:#111;
-padding:15px;
-font-size:32px;
-font-weight:bold;
-letter-spacing:3px;
-}
-
-/* CAMERA */
-
-#cameraBox{
-position:relative;
-display:inline-block;
-margin-top:20px;
-}
-
-video{
-width:520px;
-border-radius:15px;
-border:6px solid white;
-}
-
-/* FRAME */
-
-#framePreview{
-position:absolute;
-top:0;
-left:0;
-width:520px;
-height:100%;
-pointer-events:none;
-object-fit:cover;
-}
-
-/* COUNTDOWN */
-
-#count{
-position:absolute;
-top:45%;
-left:50%;
-transform:translate(-50%,-50%);
-font-size:120px;
-font-weight:bold;
-color:#00ffd5;
-}
-
-/* FLASH */
-
-#flash{
-position:absolute;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:white;
-opacity:0;
-pointer-events:none;
-transition:0.2s;
-}
-
-/* BUTTON */
-
-button{
-padding:14px 30px;
-font-size:20px;
-border:none;
-border-radius:12px;
-margin:6px;
-cursor:pointer;
-background:#ff3d6e;
-color:white;
-}
-
-/* CONTROLS */
-
-.controls{
-margin-top:15px;
-}
-
-/* RESULT */
-
-#result{
-margin-top:20px;
-background:white;
-padding:15px;
-display:inline-block;
-border-radius:10px;
-}
-
-canvas{
-background:white;
-}
-
-/* THEME PANEL */
-
-#themePanel{
-margin-top:25px;
-background:#111;
-padding:20px;
-border-radius:10px;
-width:500px;
-margin-left:auto;
-margin-right:auto;
-}
-
-#themePanel input,
-#themePanel select{
-margin:5px;
-padding:8px;
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <title>KING PHOTOBOOTH - PRO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; text-align: center; background: #1a1a1a; color: white; }
+        #topbar { background: #000; padding: 20px; font-size: 28px; font-weight: bold; }
+        #cameraBox { position: relative; display: inline-block; margin: 20px; border: 6px solid #fff; border-radius: 15px; overflow: hidden; line-height: 0; }
+        video { width: 640px; height: 480px; object-fit: cover; }
+        #framePreview { position: absolute; top: 0; left: 0; width: 640px; height: 480px; pointer-events: none; }
+        #count { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 150px; color: #ff3d6e; font-weight: bold; text-shadow: 2px 2px 10px #000; }
+        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; transition: 0.1s; }
+        .controls { margin-bottom: 20px; }
+        button { padding: 15px 30px; font-size: 18px; margin: 5px; cursor: pointer; border: none; border-radius: 8px; background: #ff3d6e; color: white; transition: 0.3s; }
+        button:disabled { background: #555; cursor: not-allowed; }
+        #result { margin: 20px; padding: 20px; background: #333; border-radius: 10px; display: inline-block; }
+        canvas { max-width: 100%; height: auto; display: block; }
+    </style>
 </head>
-
 <body>
 
-<div id="topbar">
-👑 KING PHOTOBOOTH
-</div>
+<div id="topbar">👑 KING PHOTOBOOTH</div>
 
 <div id="cameraBox">
-
-<video id="video" autoplay playsinline></video>
-
-<img id="framePreview">
-
-<div id="count"></div>
-
-<div id="flash"></div>
-
+    <video id="video" autoplay playsinline></video>
+    <img id="framePreview">
+    <div id="count"></div>
+    <div id="flash"></div>
 </div>
 
 <div class="controls">
-
-<select id="frameSelect" onchange="changeFrame()">
-<option value="">Không frame</option>
-</select>
-
-<select id="filter" onchange="updateFilter()">
-<option value="none">Không filter</option>
-<option value="grayscale(1)">Đen trắng</option>
-<option value="sepia(1)">Vintage</option>
-<option value="contrast(150%)">Tương phản</option>
-<option value="brightness(120%)">Sáng</option>
-</select>
-
-<br>
-
-<button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
-<button onclick="printPhoto()">🖨 IN ẢNH</button>
-<button onclick="enterFullscreen()">🖥 KIOSK</button>
-
+    <select id="frameSelect" onchange="changeFrame()">
+        <option value="">Không Frame</option>
+        <option value="frame1.png">Frame 1</option>
+    </select>
+    <select id="filter" onchange="updateFilter()">
+        <option value="none">Gốc</option>
+        <option value="grayscale(1)">Đen trắng</option>
+        <option value="sepia(1)">Cổ điển</option>
+    </select>
+    <button id="shootBtn" onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
 </div>
 
 <div id="result">
-<canvas id="canvas"></canvas>
-</div>
-
-<br>
-
-<button onclick="download()">💾 TẢI ẢNH</button>
-
-<div id="qr"></div>
-
-<!-- SOUND -->
-
-<audio id="shutter" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4012bdf6c2.mp3"></audio>
-
-<!-- THEME EDITOR -->
-
-<div id="themePanel">
-
-<h3>🎨 CHỈNH GIAO DIỆN</h3>
-
-Màu tiêu đề  
-<input type="color" onchange="changeTitleColor(this.value)">
-
-<br>
-
-Màu nút  
-<input type="color" onchange="changeButtonColor(this.value)">
-
-<br>
-
-Ảnh nền  
-<input type="file" accept="image/*" onchange="changeBackground(event)">
-
-<br>
-
-Font chữ  
-
-<select onchange="changeFont(this.value)">
-
-<option value="Arial">Arial</option>
-<option value="Verdana">Verdana</option>
-<option value="Tahoma">Tahoma</option>
-<option value="Courier New">Courier</option>
-<option value="Times New Roman">Times</option>
-
-</select>
-
+    <canvas id="canvas"></canvas>
+    <div id="qr" style="margin-top: 15px;"></div>
+    <br>
+    <button onclick="download()">💾 TẢI ẢNH</button>
 </div>
 
 <script>
-
-/* ELEMENT */
-
-const video=document.getElementById("video")
-const canvas=document.getElementById("canvas")
-const ctx=canvas.getContext("2d")
-const count=document.getElementById("count")
-const flash=document.getElementById("flash")
-const framePreview=document.getElementById("framePreview")
-
-let photos=[]
-let frameImage=null
-
-/* CAMERA */
-
-navigator.mediaDevices.getUserMedia({video:true})
-.then(stream=>{
-video.srcObject=stream
-})
-.catch(()=>{
-alert("Không mở được camera")
-})
-
-/* FILTER */
-
-function updateFilter(){
-
-video.style.filter=document.getElementById("filter").value
-
-}
-
-/* FRAME LIST */
-
-let frames=[
-
-"frames/frame1.png",
-"frames/frame2.png",
-"frames/frame3.png",
-"frames/frame4.png",
-"frames/frame5.png"
-
-]
-
-window.onload=function(){
-
-let select=document.getElementById("frameSelect")
-
-frames.forEach((f,i)=>{
-
-let option=document.createElement("option")
-
-option.value=f
-option.text="Frame "+(i+1)
-
-select.appendChild(option)
-
-})
-
-}
-
-/* CHANGE FRAME */
-
-function changeFrame(){
-
-let path=document.getElementById("frameSelect").value
-
-if(path==""){
-
-framePreview.src=""
-frameImage=null
-return
-
-}
-
-framePreview.src=path
-
-let img=new Image()
-
-img.onload=function(){
-
-frameImage=img
-
-}
-
-img.src=path
-
-}
-
-/* SHOOT */
-
-async function startShoot(){
-
-photos=[]
-
-for(let i=0;i<4;i++){
-
-await countdown()
-
-takePhoto()
-
-await sleep(500)
-
-}
-
-makeStrip()
-
-createQR()
-
-}
-
-/* TAKE PHOTO */
-
-function takePhoto(){
-
-document.getElementById("shutter").play()
-
-flash.style.opacity=1
-
-setTimeout(()=>flash.style.opacity=0,200)
-
-let temp=document.createElement("canvas")
-
-temp.width=400
-temp.height=300
-
-let t=temp.getContext("2d")
-
-t.filter=document.getElementById("filter").value
-
-t.drawImage(video,0,0,400,300)
-
-photos.push(temp)
-
-}
-
-/* MAKE STRIP */
-
-function makeStrip(){
-
-let w=420
-let h=photos.length*310+40
-
-canvas.width=w
-canvas.height=h
-
-ctx.fillStyle="white"
-ctx.fillRect(0,0,w,h)
-
-for(let i=0;i<photos.length;i++){
-
-ctx.drawImage(photos[i],10,10+i*310,400,300)
-
-}
-
-if(frameImage){
-
-ctx.drawImage(frameImage,0,0,w,h)
-
-}
-
-}
-
-/* COUNTDOWN */
-
-function countdown(){
-
-return new Promise(resolve=>{
-
-let t=3
-
-count.innerText=t
-
-let timer=setInterval(()=>{
-
-t--
-
-if(t<=0){
-
-clearInterval(timer)
-
-count.innerText="📸"
-
-setTimeout(()=>{
-
-count.innerText=""
-resolve()
-
-},400)
-
-}else{
-
-count.innerText=t
-
-}
-
-},1000)
-
-})
-
-}
-
-function sleep(ms){
-
-return new Promise(r=>setTimeout(r,ms))
-
-}
-
-/* DOWNLOAD */
-
-function download(){
-
-let link=document.createElement("a")
-
-link.download="king-photobooth.png"
-
-link.href=canvas.toDataURL("image/jpeg",0.9)
-
-link.click()
-
-}
-
-/* PRINT */
-
-function printPhoto(){
-
-let w=window.open("")
-
-w.document.write("<img src='"+canvas.toDataURL()+"' style='width:100%'>")
-
-w.print()
-
-}
-
-/* QR */
-
-function createQR(){
-
-document.getElementById("qr").innerHTML=""
-
-new QRCode(document.getElementById("qr"),{
-
-text:canvas.toDataURL("image/jpeg",0.7),
-width:200,
-height:200
-
-})
-
-}
-
-/* FULLSCREEN */
-
-function enterFullscreen(){
-
-document.documentElement.requestFullscreen()
-
-}
-
-/* THEME */
-
-function changeTitleColor(c){
-
-document.getElementById("topbar").style.color=c
-
-}
-
-function changeButtonColor(c){
-
-document.querySelectorAll("button").forEach(b=>{
-b.style.background=c
-})
-
-}
-
-function changeBackground(e){
-
-let file=e.target.files[0]
-
-let url=URL.createObjectURL(file)
-
-document.body.style.backgroundImage="url("+url+")"
-
-document.body.style.backgroundSize="cover"
-
-}
-
-function changeFont(f){
-
-document.body.style.fontFamily=f
-
-}
-
-/* HOTKEY */
-
-document.addEventListener("keydown",e=>{
-
-if(e.code==="Space") startShoot()
-
-})
-
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const count = document.getElementById("count");
+    const flash = document.getElementById("flash");
+    const framePreview = document.getElementById("framePreview");
+    let photos = [];
+    let frameImage = null;
+
+    // Khởi tạo Camera
+    navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } })
+        .then(stream => { video.srcObject = stream; })
+        .catch(e => alert("Vui lòng cấp quyền Camera!"));
+
+    function updateFilter() { video.style.filter = document.getElementById("filter").value; }
+
+    function changeFrame() {
+        let path = document.getElementById("frameSelect").value;
+        if (!path) { framePreview.src = ""; frameImage = null; return; }
+        framePreview.src = path;
+        frameImage = new Image();
+        frameImage.src = path;
+    }
+
+    async function startShoot() {
+        document.getElementById("shootBtn").disabled = true;
+        photos = [];
+        for (let i = 0; i < 4; i++) {
+            await new Promise(r => {
+                let t = 3;
+                count.innerText = t;
+                let interval = setInterval(() => {
+                    t--;
+                    if (t <= 0) {
+                        clearInterval(interval);
+                        count.innerText = "📸";
+                        flash.style.opacity = 1;
+                        setTimeout(() => { flash.style.opacity = 0; count.innerText = ""; r(); }, 200);
+                    } else { count.innerText = t; }
+                }, 1000);
+            });
+            takePhoto();
+        }
+        makeStrip();
+        document.getElementById("shootBtn").disabled = false;
+    }
+
+    function takePhoto() {
+        let temp = document.createElement("canvas");
+        temp.width = 640; temp.height = 480;
+        let t = temp.getContext("2d");
+        t.filter = document.getElementById("filter").value;
+        t.drawImage(video, 0, 0, 640, 480);
+        photos.push(temp);
+    }
+
+    function makeStrip() {
+        canvas.width = 400; canvas.height = 1400;
+        ctx.fillStyle = "white"; ctx.fillRect(0, 0, 400, 1400);
+        photos.forEach((p, i) => ctx.drawImage(p, 25, 50 + (i * 320), 350, 260));
+        if (frameImage) ctx.drawImage(frameImage, 0, 0, 400, 1400);
+        document.getElementById("qr").innerHTML = "";
+        new QRCode(document.getElementById("qr"), canvas.toDataURL());
+    }
+
+    function download() {
+        let link = document.createElement("a");
+        link.download = "photobooth.png";
+        link.href = canvas.toDataURL();
+        link.click();
+    }
 </script>
-
 </body>
 </html>
