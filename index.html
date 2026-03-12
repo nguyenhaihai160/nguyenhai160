@@ -2,7 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Photobooth Kiosk PRO</title>
+
+<title>KING PHOTOBOOTH</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -18,9 +19,10 @@ text-align:center;
 
 #topbar{
 background:#111;
-padding:10px;
-font-size:24px;
+padding:15px;
+font-size:28px;
 font-weight:bold;
+letter-spacing:2px;
 }
 
 #cameraBox{
@@ -112,7 +114,7 @@ margin-top:20px;
 <body>
 
 <div id="topbar">
-📸 PHOTOBOOTH KIOSK PRO
+👑 KING PHOTOBOOTH
 </div>
 
 <div id="cameraBox">
@@ -144,6 +146,7 @@ margin-top:20px;
 <br>
 
 <button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
+
 <button onclick="enterFullscreen()">🖥 KIOSK</button>
 
 </div>
@@ -186,7 +189,7 @@ video.style.filter=f
 
 }
 
-/* DANH SÁCH FRAME */
+/* FRAME LIST */
 
 let frames=[
 "frames/frame1.png",
@@ -196,7 +199,7 @@ let frames=[
 "frames/frame5.png"
 ]
 
-/* LOAD MENU FRAME */
+/* LOAD FRAME MENU */
 
 window.onload=function(){
 
@@ -215,7 +218,7 @@ select.appendChild(option)
 
 }
 
-/* CHỌN FRAME */
+/* CHANGE FRAME */
 
 function changeFrame(){
 
@@ -241,7 +244,7 @@ img.src=path
 
 }
 
-/* CHỤP 4 ẢNH */
+/* START SHOOT */
 
 async function startShoot(){
 
@@ -263,7 +266,7 @@ createQR()
 
 }
 
-/* CHỤP */
+/* TAKE PHOTO */
 
 function takePhoto(){
 
@@ -288,7 +291,7 @@ photos.push(temp)
 
 }
 
-/* GHÉP ẢNH */
+/* MAKE PHOTO STRIP */
 
 function makeStrip(){
 
@@ -307,8 +310,6 @@ ctx.drawImage(photos[i],10,10+i*310,400,300)
 
 }
 
-/* FRAME */
-
 if(frameImage){
 
 ctx.drawImage(frameImage,0,0,w,h)
@@ -317,7 +318,7 @@ ctx.drawImage(frameImage,0,0,w,h)
 
 }
 
-/* ĐẾM */
+/* COUNTDOWN */
 
 function countdown(){
 
@@ -368,7 +369,7 @@ function download(){
 
 let link=document.createElement("a")
 
-link.download="photobooth.png"
+link.download="king-photobooth.png"
 
 link.href=canvas.toDataURL()
 
