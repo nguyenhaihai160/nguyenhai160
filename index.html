@@ -35,6 +35,14 @@ border-radius:15px;
 border:6px solid white;
 }
 
+#framePreview{
+position:absolute;
+top:0;
+left:0;
+width:520px;
+pointer-events:none;
+}
+
 #count{
 position:absolute;
 top:45%;
@@ -76,7 +84,7 @@ button:hover{
 background:#ff0044;
 }
 
-select,input{
+select{
 padding:8px;
 font-size:16px;
 margin:4px;
@@ -111,6 +119,8 @@ margin-top:20px;
 
 <video id="video" autoplay playsinline></video>
 
+<img id="framePreview">
+
 <div id="count"></div>
 
 <div id="flash"></div>
@@ -119,6 +129,10 @@ margin-top:20px;
 
 <div class="controls">
 
+<select id="frameSelect" onchange="changeFrame()">
+<option value="">Không frame</option>
+</select>
+
 <select id="filter" onchange="updateFilter()">
 <option value="none">Không filter</option>
 <option value="grayscale(1)">Đen trắng</option>
@@ -126,11 +140,6 @@ margin-top:20px;
 <option value="contrast(150%)">Tương phản</option>
 <option value="brightness(120%)">Sáng</option>
 </select>
-
-<br>
-
-📂 Thêm Frame PNG
-<input type="file" id="frameUpload" accept="image/png">
 
 <br>
 
@@ -156,6 +165,7 @@ const canvas=document.getElementById("canvas")
 const ctx=canvas.getContext("2d")
 const count=document.getElementById("count")
 const flash=document.getElementById("flash")
+const framePreview=document.getElementById("framePreview")
 
 let photos=[]
 let frameImage=null
@@ -166,22 +176,60 @@ navigator.mediaDevices.getUserMedia({video:true})
 .then(stream=>{
 video.srcObject=stream
 })
-.catch(err=>{
-alert("Không mở được camera")
-})
 
 /* FILTER */
 
 function updateFilter(){
+
 let f=document.getElementById("filter").value
 video.style.filter=f
+
 }
 
-/* UPLOAD FRAME */
+/* DANH SÁCH FRAME */
 
-document.getElementById("frameUpload").addEventListener("change",function(e){
+let frames=[
+"frames/frame1.png",
+"frames/frame2.png",
+"frames/frame3.png",
+"frames/frame4.png",
+"frames/frame5.png"
+]
 
-let file=e.target.files[0]
+/* LOAD MENU FRAME */
+
+window.onload=function(){
+
+let select=document.getElementById("frameSelect")
+
+frames.forEach((f,i)=>{
+
+let option=document.createElement("option")
+
+option.value=f
+option.text="Frame "+(i+1)
+
+select.appendChild(option)
+
+})
+
+}
+
+/* CHỌN FRAME */
+
+function changeFrame(){
+
+let path=document.getElementById("frameSelect").value
+
+if(path==""){
+
+framePreview.src=""
+frameImage=null
+return
+
+}
+
+framePreview.src=path
 
 let img=new Image()
 
@@ -189,9 +237,9 @@ img.onload=function(){
 frameImage=img
 }
 
-img.src=URL.createObjectURL(file)
+img.src=path
 
-})
+}
 
 /* CHỤP 4 ẢNH */
 
@@ -215,11 +263,12 @@ createQR()
 
 }
 
-/* CHỤP ẢNH */
+/* CHỤP */
 
 function takePhoto(){
 
 flash.style.opacity=1
+
 setTimeout(()=>flash.style.opacity=0,200)
 
 let temp=document.createElement("canvas")
@@ -258,7 +307,7 @@ ctx.drawImage(photos[i],10,10+i*310,400,300)
 
 }
 
-/* VẼ FRAME */
+/* FRAME */
 
 if(frameImage){
 
@@ -275,6 +324,7 @@ function countdown(){
 return new Promise(resolve=>{
 
 let t=3
+
 count.innerText=t
 
 let timer=setInterval(()=>{
@@ -288,8 +338,10 @@ clearInterval(timer)
 count.innerText="📸"
 
 setTimeout(()=>{
+
 count.innerText=""
 resolve()
+
 },400)
 
 }else{
@@ -305,7 +357,9 @@ count.innerText=t
 }
 
 function sleep(ms){
+
 return new Promise(r=>setTimeout(r,ms))
+
 }
 
 /* DOWNLOAD */
