@@ -76,7 +76,7 @@ button:hover{
 background:#ff0044;
 }
 
-select{
+select,input{
 padding:8px;
 font-size:16px;
 margin:4px;
@@ -119,13 +119,6 @@ margin-top:20px;
 
 <div class="controls">
 
-<select id="frame">
-<option value="white">Khung trắng</option>
-<option value="pink">Khung hồng</option>
-<option value="black">Khung đen</option>
-<option value="yellow">Khung vàng</option>
-</select>
-
 <select id="filter" onchange="updateFilter()">
 <option value="none">Không filter</option>
 <option value="grayscale(1)">Đen trắng</option>
@@ -133,6 +126,11 @@ margin-top:20px;
 <option value="contrast(150%)">Tương phản</option>
 <option value="brightness(120%)">Sáng</option>
 </select>
+
+<br>
+
+📂 Thêm Frame PNG
+<input type="file" id="frameUpload" accept="image/png">
 
 <br>
 
@@ -160,6 +158,7 @@ const count=document.getElementById("count")
 const flash=document.getElementById("flash")
 
 let photos=[]
+let frameImage=null
 
 /* CAMERA */
 
@@ -168,17 +167,33 @@ navigator.mediaDevices.getUserMedia({video:true})
 video.srcObject=stream
 })
 .catch(err=>{
-alert("Không mở được camera. Hãy cho phép quyền camera.")
+alert("Không mở được camera")
 })
 
-/* FILTER PREVIEW */
+/* FILTER */
 
 function updateFilter(){
 let f=document.getElementById("filter").value
 video.style.filter=f
 }
 
-/* BẮT ĐẦU CHỤP */
+/* UPLOAD FRAME */
+
+document.getElementById("frameUpload").addEventListener("change",function(e){
+
+let file=e.target.files[0]
+
+let img=new Image()
+
+img.onload=function(){
+frameImage=img
+}
+
+img.src=URL.createObjectURL(file)
+
+})
+
+/* CHỤP 4 ẢNH */
 
 async function startShoot(){
 
@@ -228,21 +243,13 @@ photos.push(temp)
 
 function makeStrip(){
 
-let frame=document.getElementById("frame").value
-
 let w=420
 let h=photos.length*310+40
 
 canvas.width=w
 canvas.height=h
 
-let color="white"
-
-if(frame=="pink") color="#ffc0cb"
-if(frame=="black") color="#000"
-if(frame=="yellow") color="#ffe066"
-
-ctx.fillStyle=color
+ctx.fillStyle="white"
 ctx.fillRect(0,0,w,h)
 
 for(let i=0;i<photos.length;i++){
@@ -251,16 +258,23 @@ ctx.drawImage(photos[i],10,10+i*310,400,300)
 
 }
 
+/* VẼ FRAME */
+
+if(frameImage){
+
+ctx.drawImage(frameImage,0,0,w,h)
+
 }
 
-/* COUNTDOWN */
+}
+
+/* ĐẾM */
 
 function countdown(){
 
 return new Promise(resolve=>{
 
 let t=3
-
 count.innerText=t
 
 let timer=setInterval(()=>{
@@ -308,7 +322,7 @@ link.click()
 
 }
 
-/* QR CODE */
+/* QR */
 
 function createQR(){
 
@@ -333,31 +347,6 @@ document.documentElement.requestFullscreen()
 }
 
 }
-
-/* PHÍM TẮT */
-
-document.addEventListener("keydown",function(e){
-
-if(e.code==="Space"){
-e.preventDefault()
-startShoot()
-}
-
-if(e.key==="f"){
-enterFullscreen()
-}
-
-if(e.key==="s"){
-download()
-}
-
-if(e.key==="r"){
-photos=[]
-ctx.clearRect(0,0,canvas.width,canvas.height)
-document.getElementById("qr").innerHTML=""
-}
-
-})
 
 </script>
 
