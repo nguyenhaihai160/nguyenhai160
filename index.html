@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
 
 <meta charset="UTF-8">
@@ -11,44 +12,29 @@
 
 body{
 margin:0;
+background:#000;
 font-family:Arial;
-text-align:center;
-background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url("background.jpg");
-background-size:cover;
-background-position:center;
 color:white;
+text-align:center;
 }
 
 #topbar{
-background:#000;
+background:#111;
 padding:15px;
 font-size:32px;
 font-weight:bold;
-letter-spacing:3px;
 }
 
 #cameraBox{
 position:relative;
 display:inline-block;
 margin-top:20px;
-background:#111;
-padding:20px;
-border-radius:20px;
-box-shadow:0 0 40px rgba(0,0,0,0.8);
 }
 
 video{
 width:520px;
 border-radius:15px;
 border:6px solid white;
-}
-
-#framePreview{
-position:absolute;
-top:20px;
-left:20px;
-width:520px;
-pointer-events:none;
 }
 
 #count{
@@ -72,10 +58,6 @@ opacity:0;
 transition:0.2s;
 }
 
-.controls{
-margin-top:20px;
-}
-
 button{
 padding:14px 28px;
 font-size:20px;
@@ -87,45 +69,8 @@ background:#ff3d6e;
 color:white;
 }
 
-button:hover{
-background:#ff0044;
-}
-
-select,input{
-padding:8px;
-margin:4px;
-}
-
-#result{
-margin-top:20px;
-background:white;
-padding:15px;
-display:inline-block;
-border-radius:10px;
-}
-
 canvas{
 background:white;
-}
-
-#stickerPanel{
-width:520px;
-margin:auto;
-display:grid;
-grid-template-columns:repeat(10,1fr);
-gap:6px;
-margin-top:10px;
-}
-
-#stickerPanel img{
-width:40px;
-cursor:pointer;
-border-radius:6px;
-background:white;
-padding:2px;
-}
-
-#qr{
 margin-top:20px;
 }
 
@@ -141,71 +86,36 @@ margin-top:20px;
 
 <video id="video" autoplay playsinline></video>
 
-<img id="framePreview">
-
 <div id="count"></div>
 
 <div id="flash"></div>
 
 </div>
 
-<div class="controls">
-
-<select id="frameSelect" onchange="changeFrame()">
-<option value="">Không frame</option>
-<option value="white">Frame trắng</option>
-<option value="pink">Frame hồng</option>
-<option value="black">Frame đen</option>
-<option value="yellow">Frame vàng</option>
-<option value="blue">Frame xanh</option>
-</select>
-
-📂 Frame PNG
-<input type="file" accept="image/png" onchange="loadCustomFrame(event)">
-
 <br>
 
-📂 Sticker PNG
-<input type="file" accept="image/png" onchange="addSticker(event)">
-
-<button onclick="deleteSticker()">🗑 XÓA STICKER</button>
-
-<select id="filter" onchange="updateFilter()">
-<option value="none">Không filter</option>
-<option value="grayscale(1)">Đen trắng</option>
-<option value="sepia(1)">Vintage</option>
-<option value="contrast(150%)">Tương phản</option>
-<option value="brightness(120%)">Sáng</option>
-</select>
-
-<br>
-
-<button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
-
-<button onclick="enterFullscreen()">🖥 KIOSK</button>
+<button onclick="startShoot()">📸 CHỤP ẢNH</button>
 
 <button onclick="printPhoto()">🖨 IN ẢNH</button>
 
-</div>
-
-<h3>🧩 Sticker dễ thương</h3>
-
-<div id="stickerPanel"></div>
-
-<div id="result">
-
-<canvas id="canvas"></canvas>
-
-</div>
+<button onclick="enterFullscreen()">🖥 KIOSK</button>
 
 <br>
 
-<button onclick="download()">💾 TẢI ẢNH</button>
+<canvas id="canvas"></canvas>
 
 <div id="qr"></div>
 
-<audio id="snapSound" src="camera.mp3"></audio>
-<audio id="beep" src="beep.mp3"></audio>
+
+<!-- ÂM THANH ONLINE -->
+
+<audio id="snapSound">
+<source src="https://www.soundjay.com/mechanical/camera-shutter-click-01.mp3">
+</audio>
+
+<audio id="beepSound">
+<source src="https://www.soundjay.com/buttons/beep-07.mp3">
+</audio>
 
 <script>
 
@@ -215,130 +125,13 @@ const ctx=canvas.getContext("2d")
 
 const count=document.getElementById("count")
 const flash=document.getElementById("flash")
-const framePreview=document.getElementById("framePreview")
 
 let photos=[]
-let frameImage=null
-let frameColor=null
-
-let stickers=[]
-let dragging=null
-let selectedSticker=null
 
 navigator.mediaDevices.getUserMedia({video:true})
 .then(stream=>video.srcObject=stream)
 
-function updateFilter(){
-video.style.filter=document.getElementById("filter").value
-}
-
-function changeFrame(){
-
-let v=document.getElementById("frameSelect").value
-
-frameImage=null
-framePreview.src=""
-
-if(v=="white") frameColor="#ffffff"
-if(v=="pink") frameColor="#ffc0cb"
-if(v=="black") frameColor="#000000"
-if(v=="yellow") frameColor="#ffe066"
-if(v=="blue") frameColor="#00c2ff"
-
-}
-
-function loadCustomFrame(e){
-
-let file=e.target.files[0]
-
-let url=URL.createObjectURL(file)
-
-framePreview.src=url
-
-let img=new Image()
-
-img.onload=function(){
-
-frameImage=img
-frameColor=null
-
-}
-
-img.src=url
-
-}
-
-/* STICKERS */
-
-function loadStickers(){
-
-let panel=document.getElementById("stickerPanel")
-
-for(let i=1;i<=100;i++){
-
-let img=document.createElement("img")
-
-img.src="stickers/s"+i+".png"
-
-img.onclick=function(){
-
-addStickerFromURL(img.src)
-
-}
-
-panel.appendChild(img)
-
-}
-
-}
-
-window.onload=loadStickers
-
-function addStickerFromURL(url){
-
-let img=new Image()
-
-img.onload=function(){
-
-stickers.push({
-img:img,
-x:150,
-y:150,
-size:100,
-angle:0
-})
-
-drawCanvas()
-
-}
-
-img.src=url
-
-}
-
-function addSticker(e){
-
-let file=e.target.files[0]
-
-let url=URL.createObjectURL(file)
-
-addStickerFromURL(url)
-
-}
-
-function deleteSticker(){
-
-if(!selectedSticker) return
-
-stickers=stickers.filter(s=>s!==selectedSticker)
-
-selectedSticker=null
-
-drawCanvas()
-
-}
-
-/* SHOOT */
+/* CHỤP 4 ẢNH */
 
 async function startShoot(){
 
@@ -354,145 +147,13 @@ await sleep(500)
 
 }
 
-drawCanvas()
+makeStrip()
 
 createQR()
 
 }
 
-function takePhoto(){
-
-document.getElementById("snapSound").play()
-
-flash.style.opacity=1
-
-setTimeout(()=>flash.style.opacity=0,200)
-
-let temp=document.createElement("canvas")
-
-temp.width=400
-temp.height=300
-
-let t=temp.getContext("2d")
-
-t.filter=document.getElementById("filter").value
-
-t.drawImage(video,0,0,400,300)
-
-photos.push(temp)
-
-}
-
-function drawCanvas(){
-
-let w=420
-let h=photos.length*310+40
-
-canvas.width=w
-canvas.height=h
-
-ctx.fillStyle=frameColor?frameColor:"white"
-ctx.fillRect(0,0,w,h)
-
-for(let i=0;i<photos.length;i++){
-
-ctx.drawImage(photos[i],10,10+i*310,400,300)
-
-}
-
-if(frameImage){
-
-ctx.drawImage(frameImage,0,0,w,h)
-
-}
-
-stickers.forEach(s=>{
-
-ctx.save()
-
-ctx.translate(s.x+s.size/2,s.y+s.size/2)
-
-ctx.rotate(s.angle)
-
-ctx.drawImage(s.img,-s.size/2,-s.size/2,s.size,s.size)
-
-ctx.restore()
-
-})
-
-}
-
-/* DRAG */
-
-canvas.addEventListener("mousedown",e=>{
-
-let r=canvas.getBoundingClientRect()
-
-let x=e.clientX-r.left
-let y=e.clientY-r.top
-
-selectedSticker=null
-
-stickers.forEach(s=>{
-
-if(x>s.x && x<s.x+s.size && y>s.y && y<s.y+s.size){
-
-dragging=s
-selectedSticker=s
-
-}
-
-})
-
-})
-
-canvas.addEventListener("mousemove",e=>{
-
-if(!dragging) return
-
-let r=canvas.getBoundingClientRect()
-
-dragging.x=e.clientX-r.left-dragging.size/2
-dragging.y=e.clientY-r.top-dragging.size/2
-
-drawCanvas()
-
-})
-
-canvas.addEventListener("mouseup",()=>dragging=null)
-
-/* ROTATE */
-
-canvas.addEventListener("contextmenu",e=>{
-
-e.preventDefault()
-
-if(!selectedSticker) return
-
-selectedSticker.angle+=0.2
-
-drawCanvas()
-
-})
-
-/* ZOOM */
-
-canvas.addEventListener("wheel",e=>{
-
-if(!selectedSticker) return
-
-e.preventDefault()
-
-if(e.deltaY<0) selectedSticker.size+=10
-else selectedSticker.size-=10
-
-if(selectedSticker.size<20) selectedSticker.size=20
-
-drawCanvas()
-
-})
-
-/* COUNTDOWN */
+/* ĐẾM NGƯỢC */
 
 function countdown(){
 
@@ -504,7 +165,10 @@ count.innerText=t
 
 let timer=setInterval(()=>{
 
-document.getElementById("beep").play()
+let beep=document.getElementById("beepSound")
+
+beep.currentTime=0
+beep.play()
 
 t--
 
@@ -517,7 +181,6 @@ count.innerText="📸"
 setTimeout(()=>{
 
 count.innerText=""
-
 resolve()
 
 },400)
@@ -534,25 +197,69 @@ count.innerText=t
 
 }
 
-function sleep(ms){
-return new Promise(r=>setTimeout(r,ms))
+/* CHỤP ẢNH */
+
+function takePhoto(){
+
+let snap=document.getElementById("snapSound")
+
+snap.currentTime=0
+snap.play()
+
+flash.style.opacity=1
+setTimeout(()=>flash.style.opacity=0,200)
+
+let temp=document.createElement("canvas")
+
+temp.width=400
+temp.height=300
+
+let t=temp.getContext("2d")
+
+t.drawImage(video,0,0,400,300)
+
+photos.push(temp)
+
 }
 
-/* DOWNLOAD */
+/* GHÉP ẢNH */
 
-function download(){
+function makeStrip(){
 
-let link=document.createElement("a")
+let w=420
+let h=photos.length*310+40
 
-link.download="king-photobooth.png"
+canvas.width=w
+canvas.height=h
 
-link.href=canvas.toDataURL()
+ctx.fillStyle="white"
+ctx.fillRect(0,0,w,h)
 
-link.click()
+for(let i=0;i<photos.length;i++){
+
+ctx.drawImage(photos[i],10,10+i*310,400,300)
 
 }
 
-/* PRINT */
+}
+
+/* QR */
+
+function createQR(){
+
+document.getElementById("qr").innerHTML=""
+
+new QRCode(document.getElementById("qr"),{
+
+text:canvas.toDataURL("image/png"),
+width:200,
+height:200
+
+})
+
+}
+
+/* IN ẢNH */
 
 function printPhoto(){
 
@@ -566,28 +273,16 @@ w.print()
 
 }
 
-/* QR */
-
-function createQR(){
-
-document.getElementById("qr").innerHTML=""
-
-new QRCode(document.getElementById("qr"),{
-
-text:canvas.toDataURL("image/png"),
-width:220,
-height:220
-
-})
-
-}
-
 /* FULLSCREEN */
 
 function enterFullscreen(){
 
 document.documentElement.requestFullscreen()
 
+}
+
+function sleep(ms){
+return new Promise(r=>setTimeout(r,ms))
 }
 
 </script>
