@@ -3,7 +3,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <title>KING PHOTOBOOTH</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -12,23 +11,18 @@
 
 body{
 margin:0;
+background:#000;
 font-family:Arial;
 color:white;
 text-align:center;
-background:#000;
 }
-
-/* TOP BAR */
 
 #topbar{
 background:#111;
 padding:15px;
 font-size:32px;
 font-weight:bold;
-letter-spacing:3px;
 }
-
-/* CAMERA */
 
 #cameraBox{
 position:relative;
@@ -50,8 +44,6 @@ width:520px;
 pointer-events:none;
 }
 
-/* COUNTDOWN */
-
 #count{
 position:absolute;
 top:45%;
@@ -62,8 +54,6 @@ font-weight:bold;
 color:#00ffd5;
 }
 
-/* FLASH */
-
 #flash{
 position:absolute;
 top:0;
@@ -72,30 +62,28 @@ width:100%;
 height:100%;
 background:white;
 opacity:0;
-pointer-events:none;
 transition:0.2s;
 }
-
-/* BUTTON */
-
-button{
-padding:14px 30px;
-font-size:20px;
-border:none;
-border-radius:12px;
-margin:6px;
-cursor:pointer;
-background:#ff3d6e;
-color:white;
-}
-
-/* CONTROLS */
 
 .controls{
 margin-top:15px;
 }
 
-/* RESULT */
+button{
+padding:14px 28px;
+font-size:20px;
+border:none;
+border-radius:12px;
+margin:5px;
+cursor:pointer;
+background:#ff3d6e;
+color:white;
+}
+
+select,input{
+padding:8px;
+margin:4px;
+}
 
 #result{
 margin-top:20px;
@@ -109,22 +97,13 @@ canvas{
 background:white;
 }
 
-/* THEME PANEL */
-
 #themePanel{
 margin-top:25px;
 background:#111;
 padding:20px;
 border-radius:10px;
 width:500px;
-margin-left:auto;
-margin-right:auto;
-}
-
-#themePanel input,
-#themePanel select{
-margin:5px;
-padding:8px;
+margin:auto;
 }
 
 </style>
@@ -133,9 +112,7 @@ padding:8px;
 
 <body>
 
-<div id="topbar">
-👑 KING PHOTOBOOTH
-</div>
+<div id="topbar">👑 KING PHOTOBOOTH</div>
 
 <div id="cameraBox">
 
@@ -155,6 +132,18 @@ padding:8px;
 <option value="">Không frame</option>
 </select>
 
+📂 Frame PNG
+<input type="file" accept="image/png" onchange="loadCustomFrame(event)">
+
+<br>
+
+🧩 Sticker
+<input type="file" accept="image/png" onchange="addSticker(event)">
+
+<br>
+
+<button onclick="deleteSticker()">🗑 XÓA STICKER</button>
+
 <select id="filter" onchange="updateFilter()">
 <option value="none">Không filter</option>
 <option value="grayscale(1)">Đen trắng</option>
@@ -166,7 +155,6 @@ padding:8px;
 <br>
 
 <button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
-
 <button onclick="enterFullscreen()">🖥 KIOSK</button>
 
 </div>
@@ -181,54 +169,54 @@ padding:8px;
 
 <div id="qr"></div>
 
-<!-- THEME EDITOR -->
-
 <div id="themePanel">
 
 <h3>🎨 CHỈNH GIAO DIỆN</h3>
 
-Màu tiêu đề  
+Màu tiêu đề
 <input type="color" onchange="changeTitleColor(this.value)">
 
 <br>
 
-Màu nút  
+Màu nút
 <input type="color" onchange="changeButtonColor(this.value)">
 
 <br>
 
-Ảnh nền  
+Ảnh nền
 <input type="file" accept="image/*" onchange="changeBackground(event)">
 
 <br>
 
-Font chữ  
+Font chữ
 
 <select onchange="changeFont(this.value)">
-
 <option value="Arial">Arial</option>
 <option value="Verdana">Verdana</option>
 <option value="Tahoma">Tahoma</option>
 <option value="Courier New">Courier</option>
 <option value="Times New Roman">Times</option>
-
 </select>
 
 </div>
 
 <script>
 
-/* ELEMENT */
-
 const video=document.getElementById("video")
 const canvas=document.getElementById("canvas")
 const ctx=canvas.getContext("2d")
+
 const count=document.getElementById("count")
 const flash=document.getElementById("flash")
 const framePreview=document.getElementById("framePreview")
 
 let photos=[]
 let frameImage=null
+let frameColor=null
+
+let stickers=[]
+let dragging=null
+let selectedSticker=null
 
 /* CAMERA */
 
@@ -240,21 +228,18 @@ video.srcObject=stream
 /* FILTER */
 
 function updateFilter(){
-
 video.style.filter=document.getElementById("filter").value
-
 }
 
-/* FRAME LIST */
+/* FRAME MÀU */
 
 let frames=[
-
-"frames/frame1.png",
-"frames/frame2.png",
-"frames/frame3.png",
-"frames/frame4.png",
-"frames/frame5.png"
-
+{name:"Frame Trắng",color:"#ffffff"},
+{name:"Frame Hồng",color:"#ffc0cb"},
+{name:"Frame Đen",color:"#000000"},
+{name:"Frame Vàng",color:"#ffe066"},
+{name:"Frame Xanh",color:"#00c2ff"},
+{name:"Frame Tím",color:"#9b59b6"}
 ]
 
 window.onload=function(){
@@ -265,8 +250,8 @@ frames.forEach((f,i)=>{
 
 let option=document.createElement("option")
 
-option.value=f
-option.text="Frame "+(i+1)
+option.value=i
+option.text=f.name
 
 select.appendChild(option)
 
@@ -274,35 +259,92 @@ select.appendChild(option)
 
 }
 
-/* CHANGE FRAME */
+/* CHỌN FRAME */
 
 function changeFrame(){
 
-let path=document.getElementById("frameSelect").value
+let id=document.getElementById("frameSelect").value
 
-if(path==""){
-
-framePreview.src=""
+if(id===""){
+frameColor=null
 frameImage=null
 return
+}
+
+frameColor=frames[id].color
+frameImage=null
+framePreview.src=""
 
 }
 
-framePreview.src=path
+/* FRAME PNG */
+
+function loadCustomFrame(e){
+
+let file=e.target.files[0]
+if(!file) return
+
+let url=URL.createObjectURL(file)
+
+framePreview.src=url
 
 let img=new Image()
 
 img.onload=function(){
 
 frameImage=img
+frameColor=null
 
 }
 
-img.src=path
+img.src=url
 
 }
 
-/* SHOOT */
+/* STICKER */
+
+function addSticker(e){
+
+let file=e.target.files[0]
+if(!file) return
+
+let url=URL.createObjectURL(file)
+
+let img=new Image()
+
+img.onload=function(){
+
+stickers.push({
+img:img,
+x:150,
+y:150,
+size:100,
+angle:0
+})
+
+drawCanvas()
+
+}
+
+img.src=url
+
+}
+
+/* XÓA STICKER */
+
+function deleteSticker(){
+
+if(!selectedSticker) return
+
+stickers=stickers.filter(s=>s!==selectedSticker)
+
+selectedSticker=null
+
+drawCanvas()
+
+}
+
+/* CHỤP ẢNH */
 
 async function startShoot(){
 
@@ -318,7 +360,7 @@ await sleep(500)
 
 }
 
-makeStrip()
+drawCanvas()
 
 createQR()
 
@@ -345,7 +387,9 @@ photos.push(temp)
 
 }
 
-function makeStrip(){
+/* VẼ CANVAS */
+
+function drawCanvas(){
 
 let w=420
 let h=photos.length*310+40
@@ -353,22 +397,113 @@ let h=photos.length*310+40
 canvas.width=w
 canvas.height=h
 
-ctx.fillStyle="white"
+ctx.fillStyle=frameColor?frameColor:"white"
 ctx.fillRect(0,0,w,h)
 
 for(let i=0;i<photos.length;i++){
-
 ctx.drawImage(photos[i],10,10+i*310,400,300)
-
 }
 
 if(frameImage){
-
 ctx.drawImage(frameImage,0,0,w,h)
+}
+
+stickers.forEach(s=>{
+
+ctx.save()
+
+ctx.translate(s.x+s.size/2 , s.y+s.size/2)
+
+ctx.rotate(s.angle)
+
+ctx.drawImage(s.img,-s.size/2,-s.size/2,s.size,s.size)
+
+ctx.restore()
+
+})
 
 }
 
+/* KÉO STICKER */
+
+canvas.addEventListener("mousedown",e=>{
+
+let rect=canvas.getBoundingClientRect()
+
+let x=e.clientX-rect.left
+let y=e.clientY-rect.top
+
+selectedSticker=null
+
+stickers.forEach(s=>{
+
+if(x>s.x && x<s.x+s.size && y>s.y && y<s.y+s.size){
+
+dragging=s
+selectedSticker=s
+
 }
+
+})
+
+})
+
+canvas.addEventListener("mousemove",e=>{
+
+if(!dragging) return
+
+let rect=canvas.getBoundingClientRect()
+
+dragging.x=e.clientX-rect.left-dragging.size/2
+dragging.y=e.clientY-rect.top-dragging.size/2
+
+drawCanvas()
+
+})
+
+canvas.addEventListener("mouseup",()=>{
+
+dragging=null
+
+})
+
+/* XOAY */
+
+canvas.addEventListener("contextmenu",e=>{
+
+e.preventDefault()
+
+if(!selectedSticker) return
+
+selectedSticker.angle+=0.2
+
+drawCanvas()
+
+})
+
+/* ZOOM */
+
+canvas.addEventListener("wheel",e=>{
+
+if(!selectedSticker) return
+
+e.preventDefault()
+
+if(e.deltaY<0){
+
+selectedSticker.size+=10
+
+}else{
+
+selectedSticker.size-=10
+
+if(selectedSticker.size<20) selectedSticker.size=20
+
+}
+
+drawCanvas()
+
+})
 
 /* COUNTDOWN */
 
@@ -391,10 +526,8 @@ clearInterval(timer)
 count.innerText="📸"
 
 setTimeout(()=>{
-
 count.innerText=""
 resolve()
-
 },400)
 
 }else{
@@ -410,9 +543,7 @@ count.innerText=t
 }
 
 function sleep(ms){
-
 return new Promise(r=>setTimeout(r,ms))
-
 }
 
 /* DOWNLOAD */
@@ -436,11 +567,9 @@ function createQR(){
 document.getElementById("qr").innerHTML=""
 
 new QRCode(document.getElementById("qr"),{
-
 text:canvas.toDataURL(),
 width:200,
 height:200
-
 })
 
 }
@@ -448,25 +577,19 @@ height:200
 /* FULLSCREEN */
 
 function enterFullscreen(){
-
 document.documentElement.requestFullscreen()
-
 }
 
-/* THEME EDITOR */
+/* THEME */
 
 function changeTitleColor(c){
-
 document.getElementById("topbar").style.color=c
-
 }
 
 function changeButtonColor(c){
-
 document.querySelectorAll("button").forEach(b=>{
 b.style.background=c
 })
-
 }
 
 function changeBackground(e){
@@ -476,15 +599,12 @@ let file=e.target.files[0]
 let url=URL.createObjectURL(file)
 
 document.body.style.backgroundImage="url("+url+")"
-
 document.body.style.backgroundSize="cover"
 
 }
 
 function changeFont(f){
-
 document.body.style.fontFamily=f
-
 }
 
 </script>
