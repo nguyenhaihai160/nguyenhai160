@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
 <meta charset="UTF-8">
 
@@ -11,24 +12,41 @@
 
 body{
 margin:0;
-background:#000;
 font-family:Arial;
 color:white;
 text-align:center;
+
+background-image:url("background.jpg");
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+}
+
+/* làm tối nền */
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+z-index:-1;
 }
 
 #topbar{
-background:#111;
+background:rgba(0,0,0,0.7);
 padding:15px;
-font-size:28px;
+font-size:30px;
 font-weight:bold;
-letter-spacing:2px;
+letter-spacing:3px;
 }
 
 #cameraBox{
 position:relative;
 display:inline-block;
-margin-top:10px;
+margin-top:20px;
 }
 
 video{
@@ -68,15 +86,15 @@ transition:0.2s;
 }
 
 .controls{
-margin-top:10px;
+margin-top:15px;
 }
 
 button{
-padding:14px 28px;
+padding:14px 30px;
 font-size:20px;
 border:none;
 border-radius:12px;
-margin:5px;
+margin:6px;
 cursor:pointer;
 background:#ff3d6e;
 color:white;
@@ -87,9 +105,9 @@ background:#ff0044;
 }
 
 select{
-padding:8px;
+padding:10px;
 font-size:16px;
-margin:4px;
+margin:5px;
 }
 
 #result{
@@ -189,7 +207,7 @@ video.style.filter=f
 
 }
 
-/* FRAME LIST */
+/* DANH SÁCH FRAME */
 
 let frames=[
 "frames/frame1.png",
@@ -218,7 +236,7 @@ select.appendChild(option)
 
 }
 
-/* CHANGE FRAME */
+/* CHỌN FRAME */
 
 function changeFrame(){
 
@@ -244,7 +262,7 @@ img.src=path
 
 }
 
-/* START SHOOT */
+/* CHỤP 4 ẢNH */
 
 async function startShoot(){
 
@@ -266,7 +284,7 @@ createQR()
 
 }
 
-/* TAKE PHOTO */
+/* CHỤP */
 
 function takePhoto(){
 
@@ -291,7 +309,7 @@ photos.push(temp)
 
 }
 
-/* MAKE PHOTO STRIP */
+/* GHÉP ẢNH */
 
 function makeStrip(){
 
@@ -318,7 +336,7 @@ ctx.drawImage(frameImage,0,0,w,h)
 
 }
 
-/* COUNTDOWN */
+/* ĐẾM NGƯỢC */
 
 function countdown(){
 
@@ -339,10 +357,8 @@ clearInterval(timer)
 count.innerText="📸"
 
 setTimeout(()=>{
-
 count.innerText=""
 resolve()
-
 },400)
 
 }else{
@@ -358,9 +374,7 @@ count.innerText=t
 }
 
 function sleep(ms){
-
 return new Promise(r=>setTimeout(r,ms))
-
 }
 
 /* DOWNLOAD */
