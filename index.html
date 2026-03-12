@@ -140,6 +140,10 @@ margin:auto;
 🧩 Sticker
 <input type="file" accept="image/png" onchange="addSticker(event)">
 
+<br>
+
+<button onclick="deleteSticker()">🗑 XÓA STICKER</button>
+
 <select id="filter" onchange="updateFilter()">
 <option value="none">Không filter</option>
 <option value="grayscale(1)">Đen trắng</option>
@@ -209,8 +213,10 @@ const framePreview=document.getElementById("framePreview")
 let photos=[]
 let frameImage=null
 let frameColor=null
+
 let stickers=[]
 let dragging=null
+let selectedSticker=null
 
 /* CAMERA */
 
@@ -312,7 +318,8 @@ stickers.push({
 img:img,
 x:150,
 y:150,
-size:100
+size:100,
+angle:0
 })
 
 drawCanvas()
@@ -320,6 +327,20 @@ drawCanvas()
 }
 
 img.src=url
+
+}
+
+/* XÓA STICKER */
+
+function deleteSticker(){
+
+if(!selectedSticker) return
+
+stickers=stickers.filter(s=>s!==selectedSticker)
+
+selectedSticker=null
+
+drawCanvas()
 
 }
 
@@ -376,12 +397,7 @@ let h=photos.length*310+40
 canvas.width=w
 canvas.height=h
 
-if(frameColor){
-ctx.fillStyle=frameColor
-}else{
-ctx.fillStyle="white"
-}
-
+ctx.fillStyle=frameColor?frameColor:"white"
 ctx.fillRect(0,0,w,h)
 
 for(let i=0;i<photos.length;i++){
@@ -393,7 +409,17 @@ ctx.drawImage(frameImage,0,0,w,h)
 }
 
 stickers.forEach(s=>{
-ctx.drawImage(s.img,s.x,s.y,s.size,s.size)
+
+ctx.save()
+
+ctx.translate(s.x+s.size/2 , s.y+s.size/2)
+
+ctx.rotate(s.angle)
+
+ctx.drawImage(s.img,-s.size/2,-s.size/2,s.size,s.size)
+
+ctx.restore()
+
 })
 
 }
@@ -407,10 +433,17 @@ let rect=canvas.getBoundingClientRect()
 let x=e.clientX-rect.left
 let y=e.clientY-rect.top
 
+selectedSticker=null
+
 stickers.forEach(s=>{
+
 if(x>s.x && x<s.x+s.size && y>s.y && y<s.y+s.size){
+
 dragging=s
+selectedSticker=s
+
 }
+
 })
 
 })
@@ -431,6 +464,44 @@ drawCanvas()
 canvas.addEventListener("mouseup",()=>{
 
 dragging=null
+
+})
+
+/* XOAY */
+
+canvas.addEventListener("contextmenu",e=>{
+
+e.preventDefault()
+
+if(!selectedSticker) return
+
+selectedSticker.angle+=0.2
+
+drawCanvas()
+
+})
+
+/* ZOOM */
+
+canvas.addEventListener("wheel",e=>{
+
+if(!selectedSticker) return
+
+e.preventDefault()
+
+if(e.deltaY<0){
+
+selectedSticker.size+=10
+
+}else{
+
+selectedSticker.size-=10
+
+if(selectedSticker.size<20) selectedSticker.size=20
+
+}
+
+drawCanvas()
 
 })
 
