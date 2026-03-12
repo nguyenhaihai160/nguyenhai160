@@ -169,19 +169,16 @@ video.srcObject=stream
 })
 .catch(err=>{
 alert("Không mở được camera. Hãy cho phép quyền camera.")
-console.log(err)
 })
 
 /* FILTER PREVIEW */
 
 function updateFilter(){
-
 let f=document.getElementById("filter").value
 video.style.filter=f
-
 }
 
-/* CHỤP 4 ẢNH */
+/* BẮT ĐẦU CHỤP */
 
 async function startShoot(){
 
@@ -208,7 +205,6 @@ createQR()
 function takePhoto(){
 
 flash.style.opacity=1
-
 setTimeout(()=>flash.style.opacity=0,200)
 
 let temp=document.createElement("canvas")
@@ -257,7 +253,7 @@ ctx.drawImage(photos[i],10,10+i*310,400,300)
 
 }
 
-/* ĐẾM NGƯỢC */
+/* COUNTDOWN */
 
 function countdown(){
 
@@ -312,7 +308,7 @@ link.click()
 
 }
 
-/* TẠO QR */
+/* QR CODE */
 
 function createQR(){
 
@@ -337,6 +333,31 @@ document.documentElement.requestFullscreen()
 }
 
 }
+
+/* PHÍM TẮT */
+
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space"){
+e.preventDefault()
+startShoot()
+}
+
+if(e.key==="f"){
+enterFullscreen()
+}
+
+if(e.key==="s"){
+download()
+}
+
+if(e.key==="r"){
+photos=[]
+ctx.clearRect(0,0,canvas.width,canvas.height)
+document.getElementById("qr").innerHTML=""
+}
+
+})
 
 </script>
 
