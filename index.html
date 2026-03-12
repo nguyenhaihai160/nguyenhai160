@@ -3,7 +3,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <title>KING PHOTOBOOTH</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -16,6 +15,7 @@ font-family:Arial;
 color:white;
 text-align:center;
 background:#000;
+overflow:hidden;
 }
 
 /* TOP BAR */
@@ -42,12 +42,16 @@ border-radius:15px;
 border:6px solid white;
 }
 
+/* FRAME */
+
 #framePreview{
 position:absolute;
 top:0;
 left:0;
 width:520px;
+height:100%;
 pointer-events:none;
+object-fit:cover;
 }
 
 /* COUNTDOWN */
@@ -166,7 +170,7 @@ padding:8px;
 <br>
 
 <button onclick="startShoot()">📸 BẮT ĐẦU CHỤP</button>
-
+<button onclick="printPhoto()">🖨 IN ẢNH</button>
 <button onclick="enterFullscreen()">🖥 KIOSK</button>
 
 </div>
@@ -180,6 +184,10 @@ padding:8px;
 <button onclick="download()">💾 TẢI ẢNH</button>
 
 <div id="qr"></div>
+
+<!-- SOUND -->
+
+<audio id="shutter" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_4012bdf6c2.mp3"></audio>
 
 <!-- THEME EDITOR -->
 
@@ -235,6 +243,9 @@ let frameImage=null
 navigator.mediaDevices.getUserMedia({video:true})
 .then(stream=>{
 video.srcObject=stream
+})
+.catch(()=>{
+alert("Không mở được camera")
 })
 
 /* FILTER */
@@ -324,7 +335,11 @@ createQR()
 
 }
 
+/* TAKE PHOTO */
+
 function takePhoto(){
+
+document.getElementById("shutter").play()
 
 flash.style.opacity=1
 
@@ -344,6 +359,8 @@ t.drawImage(video,0,0,400,300)
 photos.push(temp)
 
 }
+
+/* MAKE STRIP */
 
 function makeStrip(){
 
@@ -423,9 +440,21 @@ let link=document.createElement("a")
 
 link.download="king-photobooth.png"
 
-link.href=canvas.toDataURL()
+link.href=canvas.toDataURL("image/jpeg",0.9)
 
 link.click()
+
+}
+
+/* PRINT */
+
+function printPhoto(){
+
+let w=window.open("")
+
+w.document.write("<img src='"+canvas.toDataURL()+"' style='width:100%'>")
+
+w.print()
 
 }
 
@@ -437,7 +466,7 @@ document.getElementById("qr").innerHTML=""
 
 new QRCode(document.getElementById("qr"),{
 
-text:canvas.toDataURL(),
+text:canvas.toDataURL("image/jpeg",0.7),
 width:200,
 height:200
 
@@ -453,7 +482,7 @@ document.documentElement.requestFullscreen()
 
 }
 
-/* THEME EDITOR */
+/* THEME */
 
 function changeTitleColor(c){
 
@@ -486,6 +515,14 @@ function changeFont(f){
 document.body.style.fontFamily=f
 
 }
+
+/* HOTKEY */
+
+document.addEventListener("keydown",e=>{
+
+if(e.code==="Space") startShoot()
+
+})
 
 </script>
 
