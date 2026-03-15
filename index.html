@@ -5,6 +5,7 @@
 <title>KING PHOTOBOOTH 👑</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.min.js"></script>
 <style>
   :root {
     --neon-pink: #ff3d6e;
@@ -24,11 +25,7 @@
     text-align: center;
     overflow-x: hidden;
   }
-  @keyframes bgFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+  @keyframes bgFlow { 0% {background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
   #topbar {
     background: linear-gradient(90deg, var(--neon-pink), var(--neon-orange), var(--neon-cyan));
     background-size: 200% 200%;
@@ -41,13 +38,8 @@
     text-shadow: 0 0 30px rgba(255,255,255,0.9), 0 0 60px var(--neon-pink);
     box-shadow: 0 10px 40px rgba(0,0,0,0.7);
   }
-  @keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+  @keyframes gradientFlow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-  /* ── Khu vực camera + nút chụp ── */
   .camera-section {
     position: relative;
     display: flex;
@@ -63,8 +55,7 @@
     padding: 16px;
     background: var(--glass-bg);
     border-radius: 32px;
-    box-shadow: 0 0 60px rgba(255,61,110,0.5),
-                inset 0 0 30px rgba(255,255,255,0.12);
+    box-shadow: 0 0 60px rgba(255,61,110,0.5), inset 0 0 30px rgba(255,255,255,0.12);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.15);
   }
@@ -100,10 +91,7 @@
     pointer-events: none;
     animation: pulse 1s infinite alternate;
   }
-  @keyframes pulse {
-    from { transform: scale(0.9); opacity: 0.8; }
-    to { transform: scale(1.1); opacity: 1; }
-  }
+  @keyframes pulse { from {transform:scale(0.9);opacity:0.8} to {transform:scale(1.1);opacity:1} }
 
   #flash {
     position: absolute;
@@ -114,7 +102,6 @@
     pointer-events: none;
   }
 
-  /* ── NÚT BẮT ĐẦU CHỤP - HÌNH TRÒN BÊN TRÁI ── */
   #startBtn {
     position: absolute;
     left: -160px;
@@ -139,67 +126,42 @@
     text-align: center;
     line-height: 1.3;
   }
-
-  #startBtn:hover {
-    transform: translateY(-50%) scale(1.15);
-    box-shadow: 0 25px 60px rgba(255,61,110,0.9);
-    border-color: var(--neon-cyan);
-  }
-
-  #startBtn:active {
-    transform: translateY(-50%) scale(0.96);
-  }
+  #startBtn:hover { transform: translateY(-50%) scale(1.15); box-shadow: 0 25px 60px rgba(255,61,110,0.9); border-color: var(--neon-cyan); }
+  #startBtn:active { transform: translateY(-50%) scale(0.96); }
 
   .controls {
     margin: 30px auto;
-    max-width: 700px;
+    max-width: 900px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 18px;
     padding: 0 20px;
   }
 
-  button:not(#startBtn), select, input[type="file"], input[type="color"] {
-    padding: 16px 32px;
-    font-size: 1.1rem;
+  button, select, input[type="file"], input[type="color"], input[type="text"] {
+    padding: 14px 24px;
+    font-size: 1.05rem;
     font-weight: 600;
     border: none;
     border-radius: 999px;
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.35s;
     box-shadow: 0 8px 25px rgba(0,0,0,0.5);
   }
 
-  button:not(#startBtn) {
+  button {
     background: linear-gradient(45deg, var(--neon-pink), var(--neon-orange));
     color: white;
     position: relative;
     overflow: hidden;
   }
+  button:hover { transform: translateY(-4px) scale(1.06); box-shadow: 0 16px 50px rgba(255,61,110,0.7); }
 
-  button:not(#startBtn)::before {
-    content: '';
-    position: absolute;
-    top: -100%; left: -100%;
-    width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.4) 10%, transparent 60%);
-    opacity: 0;
-    transition: all 0.5s;
-  }
-
-  button:not(#startBtn):hover::before { opacity: 1; top: -50%; left: -50%; }
-
-  button:not(#startBtn):hover {
-    transform: translateY(-6px) scale(1.08);
-    box-shadow: 0 16px 50px rgba(255,61,110,0.7);
-  }
-
-  select, input[type="color"], input[type="file"] {
+  select, input[type="color"], input[type="file"], input[type="text"] {
     background: rgba(255,255,255,0.1);
     color: white;
     border: 2px solid rgba(0,255,234,0.3);
   }
-  select option { background: #1a1a3a; color: white; }
 
   #result {
     margin: 50px auto 30px;
@@ -208,62 +170,24 @@
     border-radius: 32px;
     box-shadow: 0 15px 50px rgba(0,0,0,0.6);
     backdrop-filter: blur(16px);
-    max-width: 520px;
+    max-width: 560px;
     border: 1px solid rgba(255,255,255,0.12);
   }
 
-  canvas {
+  canvas, #gifPreview {
     border-radius: 20px;
     background: white;
     box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     max-width: 100%;
+    margin: 15px auto;
+    display: block;
   }
 
-  #qr { margin: 40px auto; }
-
-  #themePanel {
-    margin: 50px auto;
-    background: rgba(20,20,50,0.75);
-    padding: 35px;
-    border-radius: 32px;
-    max-width: 620px;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.6);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(0,255,234,0.15);
-  }
-
-  #themePanel h3 {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 2.2rem;
-    margin-bottom: 25px;
-    text-shadow: 0 0 20px var(--neon-cyan);
-  }
-
-  input[type="color"] {
-    width: 90px;
-    height: 55px;
-    border-radius: 16px;
-    padding: 6px;
-  }
+  #qr { margin: 40px auto; min-height: 260px; }
 
   @media (max-width: 900px) {
-    .camera-section { flex-direction: column; align-items: center; }
-    #startBtn {
-      position: static;
-      transform: none;
-      margin: 30px auto 20px;
-      width: 120px;
-      height: 120px;
-      left: auto;
-      top: auto;
-    }
-    video { width: 90vw; }
-    #framePreview { width: 90vw; inset: 10px; }
-  }
-
-  @media (max-width: 500px) {
-    #topbar { font-size: 2.2rem; padding: 16px; }
-    #startBtn { width: 110px; height: 110px; font-size: 0.95rem; }
+    .camera-section { flex-direction: column; }
+    #startBtn { position: static; transform: none; margin: 30px auto; width: 120px; height: 120px; }
   }
 </style>
 </head>
@@ -273,7 +197,6 @@
 
 <div class="camera-section">
   <button id="startBtn" onclick="startShoot()">📸 BẮT ĐẦU<br>CHỤP<br>(4 tấm)</button>
-
   <div id="cameraBox">
     <video id="video" autoplay playsinline></video>
     <img id="framePreview">
@@ -286,15 +209,10 @@
   <div>
     <select id="frameSelect" onchange="changeFrame()">
       <option value="">Không frame</option>
-    </select>
-    <br><small>🎨 Frame màu</small>
+    </select><br><small>🎨 Frame màu</small>
   </div>
-  <div>
-    📂 Frame PNG <input type="file" accept="image/png" onchange="loadCustomFrame(event)">
-  </div>
-  <div>
-    🧩 Sticker <input type="file" accept="image/png" onchange="addSticker(event)">
-  </div>
+  <div>📂 Frame PNG <input type="file" accept="image/png" onchange="loadCustomFrame(event)"></div>
+  <div>🧩 Sticker PNG <input type="file" accept="image/png" onchange="addSticker(event)"></div>
   <button onclick="deleteSticker()">🗑 XÓA STICKER</button>
   <select id="filter" onchange="updateFilter()">
     <option value="none">Không filter</option>
@@ -305,37 +223,55 @@
   </select>
   <button onclick="resetAll()">🔄 RESET TẤT CẢ</button>
   <button onclick="enterFullscreen()">🖥️ TOÀN MÀN HÌNH</button>
+
+  <!-- Tạo sticker text -->
+  <div style="grid-column: 1 / -1; margin-top:20px; padding:15px; background:rgba(255,255,255,0.05); border-radius:20px;">
+    <h4 style="margin-bottom:12px;">✨ Tạo Sticker Text</h4>
+    <input type="text" id="customText" placeholder="Nhập chữ (ví dụ: Hai xinh quá!)" style="width:100%; padding:12px; margin-bottom:10px; border-radius:12px; background:rgba(255,255,255,0.1); color:white; border:2px solid rgba(0,255,234,0.3);">
+    <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; margin:10px 0;">
+      <div>Màu chữ: <input type="color" id="textColor" value="#ffffff"></div>
+      <div>Màu nền: <input type="color" id="bgColor" value="#ff3d6e"></div>
+    </div>
+    <select id="stickerShape" style="margin:10px 0; padding:10px; width:100%; max-width:300px; border-radius:12px; background:rgba(255,255,255,0.1); color:white; border:2px solid rgba(0,255,234,0.3);">
+      <option value="rect">Chữ nhật bo góc</option>
+      <option value="circle">Tròn</option>
+      <option value="heart">Trái tim</option>
+    </select>
+    <button onclick="createCustomSticker()" style="margin-top:10px; background:linear-gradient(45deg, #00ffea, #ff3d6e);">➕ Tạo & Thêm Sticker</button>
+  </div>
 </div>
 
 <div id="result">
   <canvas id="canvas"></canvas>
+  <img id="gifPreview" style="display:none;" alt="GIF Preview">
+  <div style="margin:25px 0; display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+    <button onclick="downloadPNG()">💾 TẢI PNG</button>
+    <button onclick="createAndDownloadGIF()">🎞️ TẢI GIF ĐỘNG</button>
+  </div>
+  <div id="qr"><p style="color:#aaa; font-size:1.1rem;">Quét QR bằng điện thoại để tải ảnh về ngay!</p></div>
 </div>
 
-<button onclick="download()">💾 TẢI ẢNH NGAY</button>
-<div id="qr"></div>
-
-<div id="themePanel">
+<div id="themePanel" style="margin:50px auto; max-width:620px; background:rgba(20,20,50,0.75); padding:35px; border-radius:32px; box-shadow:0 15px 50px rgba(0,0,0,0.6); backdrop-filter:blur(15px); border:1px solid rgba(0,255,234,0.15);">
   <h3>🎨 CHỈNH GIAO DIỆN</h3>
   Màu tiêu đề: <input type="color" value="#ff3d6e" onchange="changeTitleColor(this.value)"><br><br>
   Màu nút: <input type="color" value="#ff3d6e" onchange="changeButtonColor(this.value)"><br><br>
   Ảnh nền: <input type="file" accept="image/*" onchange="changeBackground(event)"><br><br>
-  Font chữ:
-  <select onchange="changeFont(this.value)">
-    <option value="Poppins">Poppins (mặc định)</option>
-    <option value="Orbitron">Orbitron (futuristic)</option>
+  Font chữ: <select onchange="changeFont(this.value)">
+    <option value="Poppins">Poppins</option>
+    <option value="Orbitron">Orbitron</option>
     <option value="Arial">Arial</option>
-    <option value="Verdana">Verdana</option>
   </select>
 </div>
 
 <script>
-// ── JavaScript giữ nguyên + nhỏ gọn ────────────────────────────────────────
+// ── Core ────────────────────────────────────────────────────────────────
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const countEl = document.getElementById("count");
 const flash = document.getElementById("flash");
 const framePreview = document.getElementById("framePreview");
+const gifPreview = document.getElementById("gifPreview");
 
 let photos = [];
 let frameImage = null;
@@ -346,40 +282,28 @@ let selectedSticker = null;
 
 navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
   .then(stream => video.srcObject = stream)
-  .catch(err => alert("Không truy cập được camera: " + err.message));
+  .catch(err => alert("Không truy cập camera: " + err.message));
 
-function updateFilter() {
-  video.style.filter = document.getElementById("filter").value;
-}
+function updateFilter() { video.style.filter = document.getElementById("filter").value; }
 
 let frames = [
-  {name:"Frame Trắng", color:"#ffffff"},
-  {name:"Frame Hồng", color:"#ffc0cb"},
-  {name:"Frame Đen", color:"#000000"},
-  {name:"Frame Vàng", color:"#ffe066"},
-  {name:"Frame Xanh", color:"#00c2ff"},
-  {name:"Frame Tím", color:"#9b59b6"}
+  {name:"Trắng", color:"#ffffff"}, {name:"Hồng", color:"#ffc0cb"}, {name:"Đen", color:"#000000"},
+  {name:"Vàng", color:"#ffe066"}, {name:"Xanh", color:"#00c2ff"}, {name:"Tím", color:"#9b59b6"}
 ];
 
 window.onload = () => {
   let select = document.getElementById("frameSelect");
   frames.forEach((f,i) => {
     let opt = document.createElement("option");
-    opt.value = i;
-    opt.text = f.name;
+    opt.value = i; opt.text = f.name;
     select.appendChild(opt);
   });
 };
 
 function changeFrame() {
   let id = document.getElementById("frameSelect").value;
-  if (id === "") {
-    frameColor = null; frameImage = null; framePreview.src = "";
-    return;
-  }
-  frameColor = frames[id].color;
-  frameImage = null;
-  framePreview.src = "";
+  if (id === "") { frameColor = null; frameImage = null; framePreview.src = ""; return; }
+  frameColor = frames[id].color; frameImage = null; framePreview.src = "";
 }
 
 function loadCustomFrame(e) {
@@ -404,6 +328,59 @@ function addSticker(e) {
   img.src = url;
 }
 
+// Tạo sticker text tùy chỉnh
+function createCustomSticker() {
+  const text = document.getElementById("customText").value.trim();
+  if (!text) return alert("Nhập chữ cho sticker nhé! 📝");
+
+  const textColor = document.getElementById("textColor").value;
+  const bgColor = document.getElementById("bgColor").value;
+  const shape = document.getElementById("stickerShape").value;
+
+  const tempCanvas = document.createElement("canvas");
+  const tctx = tempCanvas.getContext("2d");
+  tctx.font = "bold 60px Poppins, sans-serif";
+  const metrics = tctx.measureText(text);
+  const textW = metrics.width;
+  const pad = 50;
+  let w = Math.max(textW + pad*2, 220);
+  let h = 100;
+
+  tempCanvas.width = w; tempCanvas.height = h;
+
+  tctx.fillStyle = bgColor;
+  if (shape === "circle") {
+    tctx.beginPath();
+    tctx.arc(w/2, h/2, Math.min(w,h)/2, 0, Math.PI*2);
+    tctx.fill();
+  } else if (shape === "heart") {
+    const cx = w/2, cy = h/2;
+    tctx.beginPath();
+    tctx.moveTo(cx, cy - 30);
+    tctx.bezierCurveTo(cx-60, cy-90, cx-110, cy-30, cx, cy+50);
+    tctx.bezierCurveTo(cx+110, cy-30, cx+60, cy-90, cx, cy-30);
+    tctx.closePath();
+    tctx.fill();
+  } else {
+    tctx.roundRect(0, 0, w, h, 30);
+    tctx.fill();
+  }
+
+  tctx.font = "bold 60px Poppins, sans-serif";
+  tctx.fillStyle = textColor;
+  tctx.textAlign = "center";
+  tctx.textBaseline = "middle";
+  tctx.fillText(text, w/2, h/2);
+
+  const img = new Image();
+  img.src = tempCanvas.toDataURL();
+  img.onload = () => {
+    stickers.push({ img, x: canvas.width/2 - w/2, y: canvas.height/2 - h/2, size: Math.max(w,h)*1.2, angle: 0, width: w, height: h });
+    drawCanvas();
+    document.getElementById("customText").value = "";
+  };
+}
+
 function deleteSticker() {
   if (!selectedSticker) return;
   stickers = stickers.filter(s => s !== selectedSticker);
@@ -420,7 +397,7 @@ async function startShoot() {
   }
   drawCanvas();
   createQR();
-  alert("Chụp xong 4 tấm! Tải ảnh hoặc scan QR nhé 👑");
+  alert("Chụp xong! Quét QR bằng ĐT để tải về hoặc nhấn nút tải PNG/GIF 👑");
 }
 
 function takePhoto() {
@@ -453,12 +430,13 @@ function drawCanvas() {
     ctx.save();
     ctx.translate(s.x + s.size/2, s.y + s.size/2);
     ctx.rotate(s.angle);
-    ctx.drawImage(s.img, -s.size/2, -s.size/2, s.size, s.size);
+    const aspect = s.width && s.height ? s.width / s.height : 1;
+    ctx.drawImage(s.img, -s.size/2, -s.size/(2*aspect), s.size, s.size/aspect);
     ctx.restore();
   });
 }
 
-// Kéo - thả - xoay - zoom sticker
+// Sticker interaction
 canvas.addEventListener("mousedown", e => {
   let rect = canvas.getBoundingClientRect();
   let x = e.clientX - rect.left;
@@ -466,46 +444,29 @@ canvas.addEventListener("mousedown", e => {
   selectedSticker = null;
   stickers.forEach(s => {
     if (x > s.x && x < s.x + s.size && y > s.y && y < s.y + s.size) {
-      dragging = s;
-      selectedSticker = s;
+      dragging = s; selectedSticker = s;
     }
   });
 });
-
 canvas.addEventListener("mousemove", e => {
   if (!dragging) return;
   let rect = canvas.getBoundingClientRect();
-  let newX = e.clientX - rect.left - dragging.size / 2;
-  let newY = e.clientY - rect.top - dragging.size / 2;
-  newX = Math.max(0, Math.min(newX, canvas.width - dragging.size));
-  newY = Math.max(0, Math.min(newY, canvas.height - dragging.size));
-  dragging.x = newX;
-  dragging.y = newY;
+  dragging.x = Math.max(0, Math.min(e.clientX - rect.left - dragging.size/2, canvas.width - dragging.size));
+  dragging.y = Math.max(0, Math.min(e.clientY - rect.top - dragging.size/2, canvas.height - dragging.size));
   drawCanvas();
 });
-
 canvas.addEventListener("mouseup", () => dragging = null);
-
-canvas.addEventListener("contextmenu", e => {
-  e.preventDefault();
-  if (!selectedSticker) return;
-  selectedSticker.angle += Math.PI / 8;
-  drawCanvas();
-});
-
+canvas.addEventListener("contextmenu", e => { e.preventDefault(); if(selectedSticker){ selectedSticker.angle += Math.PI/8; drawCanvas(); }});
 canvas.addEventListener("wheel", e => {
   e.preventDefault();
   if (!selectedSticker) return;
-  if (e.deltaY < 0) selectedSticker.size += 20;
-  else {
-    selectedSticker.size -= 20;
-    if (selectedSticker.size < 40) selectedSticker.size = 40;
-  }
+  selectedSticker.size += e.deltaY < 0 ? 25 : -25;
+  if (selectedSticker.size < 50) selectedSticker.size = 50;
   drawCanvas();
 });
 
 function countdown() {
-  return new Promise(resolve => {
+  return new Promise(r => {
     let t = 3;
     countEl.innerText = t;
     let timer = setInterval(() => {
@@ -513,7 +474,7 @@ function countdown() {
       if (t <= 0) {
         clearInterval(timer);
         countEl.innerText = "📸";
-        setTimeout(() => { countEl.innerText = ""; resolve(); }, 500);
+        setTimeout(() => { countEl.innerText = ""; r(); }, 500);
       } else countEl.innerText = t;
     }, 1000);
   });
@@ -521,61 +482,97 @@ function countdown() {
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-function download() {
-  let link = document.createElement("a");
-  link.download = "king-photobooth-" + Date.now() + ".png";
-  link.href = canvas.toDataURL("image/png");
-  link.click();
+function downloadPNG() {
+  if (photos.length === 0) return alert("Chưa có ảnh!");
+  let a = document.createElement("a");
+  a.download = `king-photobooth-${Date.now()}.png`;
+  a.href = canvas.toDataURL("image/png");
+  a.click();
 }
 
+function createAndDownloadGIF() {
+  if (photos.length === 0) return alert("Chưa chụp ảnh để tạo GIF!");
+
+  const gif = new GIF({
+    workers: 4,
+    quality: 5,
+    width: canvas.width,
+    height: canvas.height,
+    workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+  });
+
+  photos.forEach((photo, i) => {
+    ctx.fillStyle = frameColor || "white";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(photo, 60, 40 + i*380, 400, 300);
+    ctx.strokeRect(60, 40 + i*380, 400, 300);
+    if (frameImage) ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+    stickers.forEach(s => {
+      ctx.save();
+      ctx.translate(s.x + s.size/2, s.y + s.size/2);
+      ctx.rotate(s.angle);
+      const aspect = s.width && s.height ? s.width / s.height : 1;
+      ctx.drawImage(s.img, -s.size/2, -s.size/(2*aspect), s.size, s.size/aspect);
+      ctx.restore();
+    });
+    gif.addFrame(ctx, {copy: true, delay: 1500});
+  });
+
+  gif.on('finished', blob => {
+    const url = URL.createObjectURL(blob);
+    gifPreview.src = url;
+    gifPreview.style.display = "block";
+    let a = document.createElement('a');
+    a.download = `king-gif-${Date.now()}.gif`;
+    a.href = url;
+    a.click();
+    alert("GIF đã tạo xong! Tải về hoặc xem preview 🎞️");
+  });
+  gif.render();
+}
+
+// QR cho mobile tải trực tiếp
 function createQR() {
+  document.getElementById("qr").innerHTML = "<p style='color:#aaa;'>Đang tạo QR...</p>";
+  const dataUrl = canvas.toDataURL("image/png");
   document.getElementById("qr").innerHTML = "";
   new QRCode(document.getElementById("qr"), {
-    text: canvas.toDataURL(),
-    width: 220,
-    height: 220,
+    text: dataUrl,
+    width: 260,
+    height: 260,
     colorDark: "#000000",
     colorLight: "#ffffff"
   });
 }
 
 function enterFullscreen() {
-  if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  document.documentElement.requestFullscreen?.();
 }
 
 function resetAll() {
-  photos = [];
-  stickers = [];
-  selectedSticker = dragging = null;
-  frameImage = frameColor = null;
-  framePreview.src = "";
+  photos = []; stickers = []; selectedSticker = dragging = null;
+  frameImage = frameColor = null; framePreview.src = "";
   document.getElementById("frameSelect").value = "";
   canvas.width = canvas.height = 1;
-  document.getElementById("qr").innerHTML = "";
-  alert("Đã reset toàn bộ! Sẵn sàng chụp mới 👑");
+  document.getElementById("qr").innerHTML = "<p style='color:#aaa;'>Quét QR bằng điện thoại để tải ảnh về ngay!</p>";
+  gifPreview.style.display = "none"; gifPreview.src = "";
+  alert("Reset xong! Sẵn sàng chụp mới 👑");
 }
 
-// Theme functions
+// Theme
 function changeTitleColor(c) { document.getElementById("topbar").style.color = c; }
 function changeButtonColor(c) {
-  document.querySelectorAll("button:not(#startBtn)").forEach(b => {
-    b.style.background = `linear-gradient(45deg, ${c}, #ff8c42)`;
-  });
-  document.getElementById("startBtn").style.background = `linear-gradient(135deg, ${c}, #ff8c42)`;
+  document.querySelectorAll("button").forEach(b => b.style.background = `linear-gradient(45deg, ${c}, #ff8c42)`);
 }
 function changeBackground(e) {
   let file = e.target.files[0];
   if (!file) return;
-  let url = URL.createObjectURL(file);
-  document.body.style.backgroundImage = `url(${url})`;
+  document.body.style.backgroundImage = `url(${URL.createObjectURL(file)})`;
   document.body.style.backgroundSize = "cover";
-  document.body.style.backgroundPosition = "center";
 }
 function changeFont(f) {
   document.body.style.fontFamily = f + ", sans-serif";
-  if (f === "Orbitron") {
-    document.getElementById("topbar").style.fontFamily = "'Orbitron', sans-serif";
-  }
+  if (f === "Orbitron") document.getElementById("topbar").style.fontFamily = "'Orbitron', sans-serif";
 }
 </script>
 </body>
