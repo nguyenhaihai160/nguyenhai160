@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>CoachBoard Pro Plus</title>
+  <style>
+    :root{
+      --bg:#07111c;
+      --bg2:#0b1727;
+      --panel:#0f1d30;
+      --panel2:#13243a;
+      --card:#152941;
+      --line:rgba(255,255,255,.08);
+      --line2:rgba(255,255,255,.12);
+      --text:#eef5ff;
+      --muted:#98a8c7;
+      --green:#35d39b;
+      --blue:#5aa8ff;
+      --cyan:#42e8ff;
+      --red:#ff6177;
+      --orange:#ffb14a;
+      --shadow:0 20px 50px rgba(0,0,0,.35);
+      --radius:22px;
+      --radius-sm:16px;
+      --sidebar:290px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(circle at top,#132743 0%,var(--bg2) 35%,var(--bg) 100%);color:var(--text);font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;min-height:100%}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    img{max-width:100%;display:block}
+    .app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(8,16,30,.96),rgba(11,22,39,.92));backdrop-filter:blur(16px)
+    }
+    .brand{display:flex;gap:14px;align-items:center;margin-bottom:20px;padding:8px 10px}
+    .brand-logo{
+      width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,var(--green),var(--blue));
+      display:grid;place-items:center;color:#04111d;font-weight:900;font-size:18px;box-shadow:var(--shadow)
+    }
+    .brand h1{margin:0;font-size:18px;letter-spacing:.3px}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.4}
+    .nav{display:grid;gap:10px;margin-top:12px}
+    .nav-btn,.mobile-tab{
+      border:none;color:var(--text);background:transparent;text-align:left;padding:14px 16px;border-radius:16px;
+      display:flex;align-items:center;gap:12px;transition:.22s;font-weight:600
+    }
+    .nav-btn:hover,.nav-btn.active,.mobile-tab.active{
+      background:linear-gradient(135deg,rgba(53,211,155,.16),rgba(90,168,255,.16));
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)
+    }
+    .nav-emoji{font-size:18px;width:24px;text-align:center}
+    .sidebar-foot{margin-top:22px;padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03)}
+    .sidebar-foot p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+
+    .content{padding:24px 24px 100px}
+    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}
+    .title h2{margin:0;font-size:30px;line-height:1.15}
+    .title p{margin:8px 0 0;color:var(--muted);max-width:680px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn,.field-control,input,select,textarea{
+      border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      color:var(--text);border-radius:16px
+    }
+    .btn{padding:11px 16px;font-weight:700;transition:.2s}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    .btn.primary{background:linear-gradient(135deg,var(--green),#58e7b3);color:#062115;border:none}
+    .btn.secondary{background:linear-gradient(135deg,var(--blue),#7cc8ff);color:#06182b;border:none}
+    .btn.warn{background:linear-gradient(135deg,var(--orange),#ffd27a);color:#2a1800;border:none}
+    .btn.danger{background:linear-gradient(135deg,var(--red),#ff8ea0);color:#31060e;border:none}
+    .btn.small{padding:9px 12px;border-radius:14px;font-size:13px}
+    input,select,textarea{width:100%;padding:12px 14px;outline:none}
+    textarea{resize:vertical;min-height:104px}
+    .tab-page{display:none}
+    .tab-page.active{display:block}
+    .grid{display:grid;gap:18px}
+    .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .two-col{grid-template-columns:1.15fr .85fr}
+    .panel{
+      background:linear-gradient(180deg,rgba(17,31,50,.98),rgba(12,22,37,.98));border:1px solid var(--line);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;overflow:hidden
+    }
+    .panel h3{margin:0 0 14px;font-size:19px}
+    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+    .stat-card{position:relative;overflow:hidden}
+    .stat-card::after{content:"";position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:radial-gradient(circle,rgba(90,168,255,.18),transparent 62%)}
+    .stat-label{color:var(--muted);font-size:13px;font-weight:600}
+    .stat-value{font-size:34px;font-weight:900;margin-top:10px}
+    .stat-sub{margin-top:8px;color:var(--muted);font-size:13px}
+    .list{display:grid;gap:12px}
+    .list-card{padding:14px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .muted{color:var(--muted)}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+
+    .player-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .player-card{
+      padding:16px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));
+      display:grid;gap:12px;position:relative;overflow:hidden
+    }
+    .player-card::before{content:"";position:absolute;inset:auto -30px -30px auto;width:120px;height:120px;background:radial-gradient(circle,rgba(53,211,155,.12),transparent 64%)}
+    .player-top{display:flex;gap:12px;align-items:center}
+    .avatar{
+      width:70px;height:70px;border-radius:18px;background:linear-gradient(135deg,#233a5f,#1a2b45);border:1px solid var(--line2);
+      overflow:hidden;display:grid;place-items:center;font-weight:900;font-size:22px;color:#cfe5ff;flex:0 0 auto
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover}
+    .jersey{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px;background:rgba(90,168,255,.16);color:#a9d0ff}
+    .player-meta{display:grid;gap:5px}
+    .player-meta strong{font-size:17px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:12px;font-weight:700;color:#d9e6ff}
+    .player-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+    .schedule-item,.match-item,.training-item,.clip-item{
+      border:1px solid var(--line);border-radius:18px;padding:14px;background:rgba(255,255,255,.03)
+    }
+    .schedule-head,.match-head,.training-head,.clip-head{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+    .badge.green{background:rgba(53,211,155,.14);color:#8bf0c8}
+    .badge.blue{background:rgba(90,168,255,.14);color:#9ac9ff}
+    .badge.orange{background:rgba(255,177,74,.14);color:#ffd692}
+    .badge.red{background:rgba(255,97,119,.14);color:#ffb2bf}
+
+    .video-layout{display:grid;grid-template-columns:1.28fr .72fr;gap:18px}
+    .video-panel{padding:0}
+    .video-shell{padding:16px}
+    .video-wrap{position:relative;border-radius:24px;overflow:hidden;background:#000;border:1px solid var(--line);isolation:isolate}
+    video{display:block;width:100%;max-height:68vh;background:#000}
+    .video-ghost{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+    .video-wrap.pseudo3d #video{transform:translateX(7px);filter:contrast(1.05) saturate(1.05)}
+    .video-wrap.pseudo3d .video-ghost{display:block;opacity:.42;mix-blend-mode:screen;transform:translateX(-7px);filter:hue-rotate(155deg) saturate(1.45)}
+    .video-wrap:fullscreen,.video-wrap:-webkit-full-screen{border-radius:0;border:none}
+    .video-wrap:fullscreen video,.video-wrap:fullscreen .video-ghost,.video-wrap:fullscreen canvas.overlay,.video-wrap:-webkit-full-screen video,.video-wrap:-webkit-full-screen .video-ghost,.video-wrap:-webkit-full-screen canvas.overlay{max-height:100vh;height:100vh;object-fit:contain}
+    canvas.overlay{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+    .video-controls{padding:16px;border-top:1px solid var(--line)}
+    .time-row{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .timeline-shell{padding:14px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.03)}
+    .timeline-bar-wrap{position:relative}
+    .timeline-range{appearance:none;width:100%;height:10px;border-radius:999px;background:linear-gradient(90deg,rgba(90,168,255,.32),rgba(53,211,155,.36));outline:none}
+    .timeline-range::-webkit-slider-thumb{appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid var(--blue);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    .marker-layer{position:absolute;inset:0;pointer-events:none}
+    .marker{position:absolute;top:-3px;width:4px;height:16px;border-radius:999px;background:var(--orange);box-shadow:0 0 0 2px rgba(255,177,74,.18)}
+    .timeline-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
+    .metric{padding:12px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+    .metric .k{font-size:12px;color:var(--muted)}
+    .metric .v{font-size:18px;font-weight:900;margin-top:6px}
+    .analysis-tools{display:grid;gap:12px}
+    .tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .color-row{display:flex;gap:8px;flex-wrap:wrap}
+    .color-dot{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer}
+    .color-dot.active{outline:3px solid rgba(255,255,255,.16)}
+    .thumb-canvas{width:100%;border-radius:18px;border:1px solid var(--line);background:#0a1320;min-height:140px}
+
+    .ai-grid{display:grid;gap:12px}
+    .mini-pitch{position:relative;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,#2f8a47,#23693a)}
+    .mini-pitch canvas{display:block;width:100%;height:auto;aspect-ratio:1.55/1}
+    .ai-toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .ai-status{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03);font-size:13px;color:var(--muted);line-height:1.5}
+    .ai-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .ai-chip{padding:8px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);font-size:12px;font-weight:800;display:inline-flex;gap:6px;align-items:center}
+    .ai-list{display:grid;gap:10px;max-height:220px;overflow:auto}
+    .ai-card{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .calibration-tip{font-size:12px;color:var(--muted);margin-top:6px}
+
+    .field-wrap{display:grid;grid-template-columns:1fr .38fr;gap:18px}
+    .field-pro{
+      position:relative;width:100%;aspect-ratio:105 / 68;min-height:auto;border-radius:26px;overflow:hidden;border:1px solid rgba(255,255,255,.10);
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01)),
+        linear-gradient(180deg,#009300,#008d00 100%);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.04), 0 18px 44px rgba(0,0,0,.28)
+    }
+    .field-lines{position:absolute;inset:3.65%;border:3px solid rgba(255,255,255,.98)}
+    .half-line{position:absolute;left:50%;top:3.65%;bottom:3.65%;width:3px;background:rgba(255,255,255,.98);transform:translateX(-50%)}
+    .center-circle{position:absolute;left:50%;top:50%;width:16.25%;aspect-ratio:1;border:3px solid rgba(255,255,255,.98);border-radius:50%;transform:translate(-50%,-50%)}
+    .center-spot{position:absolute;left:50%;top:50%;width:8px;height:8px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+    .penalty{position:absolute;top:20.6%;width:14.35%;height:58.8%;border:3px solid rgba(255,255,255,.98)}
+    .penalty.left{left:3.65%;border-left:none}
+    .penalty.right{right:3.65%;border-right:none}
+    .six{position:absolute;top:37.35%;width:4.85%;height:25.3%;border:3px solid rgba(255,255,255,.98)}
+    .six.left{left:3.65%;border-left:none}
+    .six.right{right:3.65%;border-right:none}
+    .arc{position:absolute;top:37.35%;width:8.4%;height:25.3%;border:3px solid rgba(255,255,255,.98);border-radius:50%}
+    .arc.left{left:14.05%;clip-path:inset(0 50% 0 0)}
+    .arc.right{right:14.05%;clip-path:inset(0 0 0 50%)}
+    .goal{position:absolute;top:45.05%;width:1.0%;height:9.9%;border:3px solid rgba(255,255,255,.98)}
+    .goal.left{left:2.7%;border-left:none}
+    .goal.right{right:2.7%;border-right:none}
+    .penalty-spot{position:absolute;top:50%;width:8px;height:8px;background:#fff;border-radius:50%;transform:translate(-50%,-50%)}
+    .penalty-spot.left{left:13.35%}
+    .penalty-spot.right{left:86.65%}
+    .corner{position:absolute;width:18px;height:18px;border:3px solid rgba(255,255,255,.98);border-radius:50%}
+    .c1{left:3.65%;top:3.65%;transform:translate(-50%,-50%);clip-path:inset(50% 0 0 50%)}
+    .c2{right:3.65%;top:3.65%;transform:translate(50%,-50%);clip-path:inset(50% 50% 0 0)}
+    .c3{left:3.65%;bottom:3.65%;transform:translate(-50%,50%);clip-path:inset(0 0 50% 50%)}
+    .c4{right:3.65%;bottom:3.65%;transform:translate(50%,50%);clip-path:inset(0 50% 50% 0)}
+    .player-token{
+      --team-color:#2d6cff;--team-color-2:#55a7ff;
+      position:absolute;width:62px;height:62px;border-radius:20px;cursor:grab;user-select:none;touch-action:none;
+      display:grid;place-items:center;box-shadow:0 12px 26px rgba(0,0,0,.32);border:2px solid rgba(255,255,255,.28);overflow:visible;
+      background:linear-gradient(135deg,var(--team-color),var(--team-color-2));z-index:9;
+      transition:left .22s ease, top .22s ease, transform .18s ease, box-shadow .18s ease
+    }
+    .player-token img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+    .player-token .fallback{display:grid;place-items:center;width:100%;height:100%;font-weight:900;font-size:18px;color:#fff}
+    .token-a,.token-b{background:linear-gradient(135deg,var(--team-color),var(--team-color-2))}
+    .token-number{
+      position:absolute;right:-6px;top:-8px;min-width:26px;height:26px;padding:0 6px;border-radius:999px;
+      background:rgba(5,12,22,.92);border:2px solid rgba(255,255,255,.25);display:grid;place-items:center;
+      font-size:12px;font-weight:900;color:#fff;box-shadow:0 8px 18px rgba(0,0,0,.28)
+    }
+    .token-label{display:none !important}
+    .field-object-label{display:none !important}
+    .field-stage-fullscreen-btn{min-width:140px}
+    .field-pro:fullscreen,.field-pro:-webkit-full-screen{width:100vw;height:100vh;min-height:100vh;border-radius:0;border:none;overflow:hidden}
+    .field-pro:fullscreen .field-floatbar,.field-pro:-webkit-full-screen .field-floatbar{display:flex}
+    .field-floatbar{display:none;position:absolute;left:16px;right:16px;top:16px;z-index:30;gap:10px;flex-wrap:wrap;padding:12px;border-radius:18px;background:rgba(8,16,30,.82);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:var(--shadow)}
+    .field-floatbar .btn{padding:10px 12px}
+    .field-floatbar-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .fullscreen-tip{font-size:12px;color:var(--muted)}
+    .player-token.circle-piece{
+      width:var(--piece-size,58px);height:var(--piece-size,58px);border-radius:50%;
+      border:3px solid rgba(255,255,255,.35)
+    }
+    .player-token.circle-piece .fallback{font-size:16px}
+    .player-token.circle-piece .token-label{bottom:calc(-24px - max(0px, (var(--piece-size,58px) - 58px) * .08))}
+    .piece-style-grid,.tactical-video-grid{display:grid;gap:12px}
+    .piece-style-actions,.tactical-video-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .range-wrap{display:grid;gap:8px}
+    .range-meta{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--muted)}
+    .frames-list{display:grid;gap:10px;max-height:240px;overflow:auto}
+    .frame-card{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .export-canvas{display:none}
+    .team-style-grid,.template-grid{display:grid;gap:12px}
+    .team-style-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .team-color-set{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .team-color-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:800}
+    .team-swatch-row{display:flex;gap:8px;flex-wrap:wrap}
+    .team-swatch{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.22);cursor:pointer}
+    .team-swatch.active{outline:3px solid rgba(255,255,255,.14)}
+    .template-list{display:grid;gap:10px}
+    .template-card{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .bench{display:grid;gap:12px;align-content:start}
+    .bench-card{padding:14px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .bench-list{display:grid;gap:10px}
+    .bench-player{display:flex;gap:10px;align-items:center;padding:10px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+    .bench-avatar{width:44px;height:44px;border-radius:14px;overflow:hidden;background:#213754;display:grid;place-items:center;font-weight:900}
+
+    .field-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:6;pointer-events:auto;touch-action:none}
+    .field-topbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .field-tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .field-note{font-size:13px;color:var(--muted);line-height:1.5}
+    .field-object{
+      --obj-rot:0deg;
+      position:absolute;display:grid;place-items:center;cursor:grab;user-select:none;touch-action:none;z-index:8;
+      filter:drop-shadow(0 10px 20px rgba(0,0,0,.28));
+      transition:left .22s ease, top .22s ease, transform .18s ease, filter .18s ease, box-shadow .18s ease;
+      transform:rotate(var(--obj-rot));
+      transform-origin:center center;
+    }
+    .field-object::before,.field-object::after{box-sizing:border-box}
+    .field-object.selected{box-shadow:0 0 0 3px rgba(255,255,255,.22)}
+    .field-object.ball{
+      width:30px;height:30px;border-radius:50%;
+      background:radial-gradient(circle at 35% 35%,#fff 0 20%,#f3f3f3 20% 34%,#161616 34% 42%,#fff 42% 100%);
+      border:2px solid rgba(0,0,0,.2)
+    }
+    .field-object.cone{width:30px;height:42px}
+    .field-object.cone::before{
+      content:"";position:absolute;left:50%;top:0;transform:translateX(-50%);width:26px;height:34px;
+      background:linear-gradient(180deg,#ffd770,#ff922e);clip-path:polygon(50% 0,96% 100%,4% 100%);
+      box-shadow:inset 0 -4px 0 rgba(255,255,255,.35)
+    }
+    .field-object.cone::after{content:"";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:22px;height:5px;border-radius:999px;background:rgba(0,0,0,.22)}
+    .field-object.pole{width:18px;height:62px}
+    .field-object.pole::before{content:"";position:absolute;left:50%;top:4px;transform:translateX(-50%);width:7px;height:48px;border-radius:999px;background:linear-gradient(180deg,#fff26d,#ff9d43);box-shadow:0 0 0 2px rgba(255,255,255,.22)}
+    .field-object.pole::after{content:"";position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:24px;height:8px;border-radius:999px;background:rgba(0,0,0,.22)}
+    .field-object.goal{width:68px;height:46px;border:3px solid rgba(255,255,255,.98);border-left-width:6px;border-radius:6px;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.03))}
+    .field-object.goal::after{content:"";position:absolute;inset:7px 7px 7px 19px;border:1px dashed rgba(255,255,255,.65);border-radius:2px}
+    .field-object.mannequin{width:28px;height:64px}
+    .field-object.mannequin::before{content:"";position:absolute;left:50%;top:4px;transform:translateX(-50%);width:24px;height:52px;border-radius:14px 14px 8px 8px;background:linear-gradient(180deg,#ffec7a,#f0c620);box-shadow:inset 0 0 0 2px rgba(120,86,0,.22)}
+    .field-object.mannequin::after{content:"";position:absolute;left:50%;top:16px;transform:translateX(-50%);width:16px;height:22px;border-radius:50%;border:2px solid rgba(120,86,0,.45);box-shadow:0 17px 0 -6px rgba(120,86,0,.35),0 29px 0 -7px rgba(120,86,0,.35)}
+    .field-object.ladder{width:78px;height:26px}
+    .field-object.ladder::before{content:"";position:absolute;inset:0;border-top:4px solid #ffd45f;border-bottom:4px solid #ffd45f;border-radius:8px}
+    .field-object.ladder::after{content:"";position:absolute;left:10px;right:10px;top:5px;bottom:5px;background:repeating-linear-gradient(90deg,transparent 0 10px,#fff4b0 10px 14px,transparent 14px 24px)}
+    .field-object.hurdle{width:52px;height:32px}
+    .field-object.hurdle::before{content:"";position:absolute;left:6px;right:6px;top:7px;height:8px;border-radius:999px;background:linear-gradient(90deg,#5bd0ff,#35a8ff)}
+    .field-object.hurdle::after{content:"";position:absolute;left:8px;right:8px;bottom:3px;height:17px;border-left:4px solid #e8f7ff;border-right:4px solid #e8f7ff;border-bottom:4px solid #e8f7ff;border-radius:0 0 10px 10px}
+    .field-object.disc{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ff8fa1,#ff5a73 60%,#d81e45 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.28)}
+    .field-object.flag{width:30px;height:60px}
+    .field-object.flag::before{content:"";position:absolute;left:13px;top:2px;width:4px;height:48px;border-radius:999px;background:linear-gradient(180deg,#fff,#dce8ff)}
+    .field-object.flag::after{content:"";position:absolute;left:16px;top:2px;width:18px;height:16px;background:linear-gradient(135deg,#ff7b6b,#ffb24a);clip-path:polygon(0 0,100% 16%,0 100%);border-radius:2px}
+    .field-object.bib{width:34px;height:32px}
+    .field-object.bib::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#73f0b7,#1ccf7a);clip-path:polygon(18% 0,38% 0,44% 10%,56% 10%,62% 0,82% 0,100% 22%,86% 100%,14% 100%,0 22%);border-radius:6px}
+    .field-object.ring{width:34px;height:34px;border-radius:50%;border:5px solid #a878ff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+    .field-object.rebounder{width:64px;height:48px;border-radius:8px;background:linear-gradient(135deg,#273f64,#18273e);border:3px solid #cce4ff}
+    .field-object.rebounder::after{content:"";position:absolute;inset:7px;border:2px dashed rgba(204,228,255,.62);transform:skew(-8deg)}
+    .field-object.rotate-handle{z-index:14}
+    .field-object-label{position:absolute;left:50%;bottom:-20px;transform:translateX(-50%);font-size:11px;font-weight:800;color:#fff;white-space:nowrap}
+    .object-controls{display:grid;gap:10px}
+    .object-controls .actions{display:grid;grid-template-columns:1fr 1fr}
+    .object-selected-preview{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+    .object-selected-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid var(--line);font-size:18px}
+    .field-legend{display:grid;gap:10px}
+    .legend-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .legend-icon{width:22px;height:22px;display:grid;place-items:center}
+    .field-tool-btn.active{background:linear-gradient(135deg,var(--blue),#7cc8ff);color:#06182b;border:none}
+    .field-object-btn.active{background:linear-gradient(135deg,var(--green),#58e7b3);color:#062115;border:none}
+    .tactical-slot-grid{display:grid;gap:10px}
+    .tactical-slot{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+    .tactical-slot h4{margin:0 0 6px;font-size:15px}
+    .tactical-slot .muted{font-size:12px}
+    .token-dragging,.object-dragging{transition:none !important;transform:scale(1.04);z-index:12}
+    .polygon-tip{margin-top:8px;font-size:12px;color:var(--muted)}
+
+    .mobile-nav{
+      display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:50;padding:8px;border-radius:22px;
+      background:rgba(8,16,30,.94);border:1px solid var(--line2);backdrop-filter:blur(16px);box-shadow:var(--shadow)
+    }
+    .mobile-nav-scroll{display:flex;gap:8px;overflow:auto}
+    .mobile-tab{white-space:nowrap;padding:12px 14px;font-size:13px;min-width:max-content}
+    .hide-desktop{display:none}
+
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+    .table th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+
+    @media (max-width:1280px){
+      .player-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .video-layout,.field-wrap,.two-col{grid-template-columns:1fr}
+    }
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr}
+      .sidebar{display:none}
+      .mobile-nav{display:block}
+      .content{padding:18px 16px 108px}
+      .stats,.timeline-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .form-grid,.tool-grid{grid-template-columns:1fr}
+      .player-grid{grid-template-columns:1fr}
+      .field-pro{min-height:460px}
+      .title h2{font-size:24px}
+      .actions{width:100%}
+      .actions .btn{flex:1}
+    }
+    @media (max-width:560px){
+      .stats,.timeline-meta{grid-template-columns:1fr}
+      .player-top{align-items:flex-start}
+      .avatar{width:62px;height:62px}
+      .panel{padding:15px}
+      .field-pro{min-height:380px}
+      .player-token{width:52px;height:52px;border-radius:16px}.player-token.circle-piece{width:var(--piece-size,52px);height:var(--piece-size,52px)}
+    }
+
+    @media print{
+      body{background:#fff;color:#000}
+      .no-print{display:none !important}
+      .panel{box-shadow:none;border:1px solid #ddd;background:#fff;color:#000}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar no-print">
+      <div class="brand">
+        <div class="brand-logo">CB</div>
+        <div>
+          <h1>CoachBoard Pro Plus</h1>
+          <p>Quản lý đội bóng, tactical board và video analysis trên 1 file HTML.</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="dashboard"><span class="nav-emoji">🏠</span>Dashboard</button>
+        <button class="nav-btn" data-tab="players"><span class="nav-emoji">👥</span>Players</button>
+        <button class="nav-btn" data-tab="calendar"><span class="nav-emoji">📅</span>Calendar</button>
+        <button class="nav-btn" data-tab="trainings"><span class="nav-emoji">🏃</span>Trainings</button>
+        <button class="nav-btn" data-tab="matches"><span class="nav-emoji">🏆</span>Matches</button>
+        <button class="nav-btn" data-tab="analysis"><span class="nav-emoji">🎥</span>Video Analysis</button>
+        <button class="nav-btn" data-tab="tactical"><span class="nav-emoji">🧠</span>Tactical Board</button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <strong>Đã nâng cấp theo yêu cầu</strong>
+        <p>• Sân bóng kiểu broadcast chuyên nghiệp<br>• Thẻ cầu thủ có avatar<br>• Timeline clip đẹp hơn<br>• Xuất báo cáo PDF qua cửa sổ in<br>• Mobile responsive tốt hơn</p>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="topbar no-print">
+        <div class="title">
+          <h2 id="pageTitle">Dashboard</h2>
+          <p>App chạy trực tiếp bằng Chrome/Edge. Dữ liệu lưu trong LocalStorage trên máy của bạn.</p>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="exportPdfBtn">Xuất báo cáo PDF</button>
+          <button class="btn" id="exportJsonBtn">Xuất JSON</button>
+          <label class="btn">Nhập JSON<input id="importJsonInput" type="file" accept="application/json" hidden></label>
+          <button class="btn danger" id="resetAllBtn">Reset</button>
+        </div>
+      </div>
+
+      <section class="tab-page active" id="dashboard">
+        <div class="grid stats">
+          <div class="panel stat-card"><div class="stat-label">Cầu thủ</div><div class="stat-value" id="statPlayers">0</div><div class="stat-sub">Đã lưu trong đội hình</div></div>
+          <div class="panel stat-card"><div class="stat-label">Buổi tập</div><div class="stat-value" id="statTrainings">0</div><div class="stat-sub">Giáo án trong hệ thống</div></div>
+          <div class="panel stat-card"><div class="stat-label">Trận đấu</div><div class="stat-value" id="statMatches">0</div><div class="stat-sub">Kết quả và lịch đấu</div></div>
+          <div class="panel stat-card"><div class="stat-label">Clip phân tích</div><div class="stat-value" id="statClips">0</div><div class="stat-sub">Snapshot và marker</div></div>
+        </div>
+
+        <div class="grid two-col" style="margin-top:18px;">
+          <div class="panel">
+            <div class="panel-head"><h3>Lịch gần nhất</h3><span class="badge blue">Overview</span></div>
+            <div id="upcomingList" class="list"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Ghi chú HLV</h3><span class="badge green">Local Save</span></div>
+            <textarea id="coachNote" placeholder="Nhập ghi chú chung, mục tiêu tuần này, nhận xét đội hình..."></textarea>
+            <div style="margin-top:12px"><button class="btn primary" id="saveCoachNoteBtn">Lưu ghi chú</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="players">
+        <div class="grid two-col">
+          <div class="panel no-print">
+            <div class="panel-head"><h3>Thêm cầu thủ</h3><span class="badge green">Avatar Card</span></div>
+            <div class="form-grid">
+              <input id="playerName" placeholder="Tên cầu thủ">
+              <input id="playerNumber" placeholder="Số áo">
+              <select id="playerPosition">
+                <option value="GK">Thủ môn</option>
+                <option value="CB">Trung vệ</option>
+                <option value="FB">Hậu vệ biên</option>
+                <option value="DM">Tiền vệ trụ</option>
+                <option value="CM">Tiền vệ trung tâm</option>
+                <option value="AM">Tiền vệ công</option>
+                <option value="WG">Tiền đạo cánh</option>
+                <option value="ST">Tiền đạo</option>
+              </select>
+              <input id="playerAge" type="number" placeholder="Tuổi">
+            </div>
+            <div class="form-grid" style="margin-top:12px">
+              <input id="playerFoot" placeholder="Chân thuận: phải / trái">
+              <input id="playerSpeed" placeholder="Tốc độ / điểm mạnh">
+            </div>
+            <textarea id="playerNote" placeholder="Ghi chú chuyên môn"></textarea>
+            <label class="btn small" style="display:inline-flex;margin-top:10px">Tải avatar lên<input id="playerAvatarInput" type="file" accept="image/*" hidden></label>
+            <div class="muted" id="avatarStatus" style="margin-top:10px;font-size:13px">Chưa chọn ảnh đại diện.</div>
+            <div style="margin-top:12px"><button class="btn primary" id="addPlayerBtn">Thêm cầu thủ</button></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Danh sách cầu thủ</h3><span class="badge blue" id="playerCountBadge">0 players</span></div>
+            <div id="playerGrid" class="player-grid"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="calendar">
+        <div class="grid two-col">
+          <div class="panel no-print">
+            <div class="panel-head"><h3>Tạo lịch mới</h3><span class="badge orange">Schedule</span></div>
+            <div class="form-grid">
+              <input id="eventTitle" placeholder="Tên sự kiện">
+              <select id="eventType">
+                <option value="Training">Buổi tập</option>
+                <option value="Match">Trận đấu</option>
+                <option value="Meeting">Họp chiến thuật</option>
+              </select>
+              <input id="eventDate" type="date">
+              <input id="eventTime" type="time">
+            </div>
+            <textarea id="eventNote" placeholder="Ghi chú"></textarea>
+            <div style="margin-top:12px"><button class="btn primary" id="addEventBtn">Lưu lịch</button></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Lịch đội bóng</h3><span class="badge blue">Timeline</span></div>
+            <div id="calendarList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="trainings">
+        <div class="grid two-col">
+          <div class="panel no-print">
+            <div class="panel-head"><h3>Tạo giáo án</h3><span class="badge green">Training Plan</span></div>
+            <input id="trainingTitle" placeholder="Tên buổi tập">
+            <div class="form-grid" style="margin-top:12px">
+              <input id="trainingFocus" placeholder="Trọng tâm: pressing, build-up...">
+              <input id="trainingDuration" placeholder="Thời lượng: 90 phút">
+            </div>
+            <textarea id="trainingDrills" placeholder="Mô tả các bài tập, số người, yêu cầu, lưu ý"></textarea>
+            <div style="margin-top:12px"><button class="btn primary" id="addTrainingBtn">Lưu giáo án</button></div>
+            <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+              <label class="btn small">Upload giáo án<input id="trainingUploadInput" type="file" accept=".txt,.md,.json,.docx,.pdf" hidden></label>
+              <div class="muted" id="trainingUploadStatus" style="font-size:13px;align-self:center">Hỗ trợ TXT, MD, JSON, DOCX, PDF.</div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Danh sách buổi tập</h3><span class="badge green" id="trainingCountBadge">0 plans</span></div>
+            <div id="trainingList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="matches">
+        <div class="grid two-col">
+          <div class="panel no-print">
+            <div class="panel-head"><h3>Thêm trận đấu</h3><span class="badge red">Match Log</span></div>
+            <div class="form-grid">
+              <input id="matchOpponent" placeholder="Đối thủ">
+              <input id="matchVenue" placeholder="Sân thi đấu">
+              <input id="matchDate" type="date">
+              <input id="matchScore" placeholder="Tỷ số: 2-1">
+            </div>
+            <textarea id="matchNote" placeholder="Nhận xét trận đấu, key moments, tactical points"></textarea>
+            <div style="margin-top:12px"><button class="btn primary" id="addMatchBtn">Lưu trận đấu</button></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h3>Lịch sử trận đấu</h3><span class="badge red" id="matchCountBadge">0 matches</span></div>
+            <div id="matchList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="analysis">
+        <div class="video-layout">
+          <div class="panel video-panel">
+            <div class="video-shell">
+              <div class="panel-head no-print"><h3>Video Analysis</h3><span class="badge blue">Timeline Pro</span></div>
+              <div class="video-wrap" id="videoWrap">
+                <video id="video" controls playsinline></video>
+                <video id="videoGhost" class="video-ghost" muted playsinline></video>
+                <canvas id="drawCanvas" class="overlay"></canvas>
+              </div>
+            </div>
+            <div class="video-controls">
+              <div class="time-row no-print">
+                <div class="actions" style="gap:8px">
+                  <label class="btn small">Tải video<input id="videoInput" type="file" accept="video/*" hidden></label>
+                  <button class="btn small secondary" id="playPauseBtn">▶ Play</button>
+                  <button class="btn small" id="fullscreenBtn">Toàn màn hình</button>
+                  <button class="btn small" id="pseudo3dBtn">3D giả lập: Tắt</button>
+                  <button class="btn small" id="captureFrameBtn">Lưu snapshot</button>
+                  <button class="btn small" id="addMarkerBtn">Đánh dấu mốc</button>
+                  <button class="btn small danger" id="clearDrawingBtn">Xóa nét vẽ</button>
+                </div>
+                <div><strong id="timeLabel">00:00</strong> <span class="muted">/</span> <span id="durationLabel" class="muted">00:00</span></div>
+              </div>
+              <div class="timeline-shell">
+                <div class="timeline-bar-wrap">
+                  <input class="timeline-range" id="timelineRange" type="range" min="0" max="100" value="0">
+                  <div class="marker-layer" id="markerLayer"></div>
+                </div>
+                <div class="timeline-meta">
+                  <div class="metric"><div class="k">Mốc đánh dấu</div><div class="v" id="markerCount">0</div></div>
+                  <div class="metric"><div class="k">Snapshot</div><div class="v" id="snapshotCount">0</div></div>
+                  <div class="metric"><div class="k">Công cụ vẽ</div><div class="v" id="activeToolLabel">Pen</div></div>
+                  <div class="metric"><div class="k">Màu hiện tại</div><div class="v" id="activeColorLabel">White</div></div>
+                  <div class="metric"><div class="k">Chế độ xem</div><div class="v" id="videoModeLabel">2D</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head no-print"><h3>Công cụ phân tích</h3><span class="badge orange">Annotations</span></div>
+            <div class="analysis-tools no-print">
+              <div class="tool-grid">
+                <button class="btn small primary tool-btn" data-tool="pen">Pen</button>
+                <button class="btn small tool-btn" data-tool="arrow">Arrow</button>
+                <button class="btn small tool-btn" data-tool="rect">Zone</button>
+                <button class="btn small tool-btn" data-tool="circle">Circle</button>
+              </div>
+              <div class="tool-grid">
+                <button class="btn small tool-btn" data-tool="text">Text</button>
+                <button class="btn small tool-btn" data-tool="eraser">Eraser</button>
+              </div>
+              <div>
+                <div class="muted" style="margin-bottom:8px">Màu vẽ</div>
+                <div class="color-row" id="colorPalette"></div>
+              </div>
+              <div class="form-grid">
+                <input id="annotationText" placeholder="Text cho công cụ chữ">
+                <input id="lineWidthInput" type="number" min="1" max="12" value="4" placeholder="Độ dày nét">
+              </div>
+            </div>
+            <div class="panel-head" style="margin-top:10px"><h3>AI Detect + MiniMap</h3><span class="badge green">Beta</span></div>
+            <div class="ai-grid no-print">
+              <div class="ai-toolbar">
+                <button class="btn small" id="startCalibrationBtn">Hiệu chỉnh 4 góc sân</button>
+                <button class="btn small secondary" id="runAiDetectBtn">AI detect timeline</button>
+                <button class="btn small" id="jumpPrevAiBtn">⏪ Tình huống trước</button>
+                <button class="btn small" id="jumpNextAiBtn">⏩ Tình huống sau</button>
+                <button class="btn small" id="simulatePassBtn">Tạo đường chuyền giả lập</button>
+                <button class="btn small danger" id="clearAiBtn">Xóa AI data</button>
+              </div>
+              <div class="form-grid">
+                <input id="aiSampleStep" type="number" min="0.2" step="0.1" value="0.6" placeholder="Bước quét giây/frame">
+                <input id="aiMaxFrames" type="number" min="20" step="10" value="180" placeholder="Giới hạn frame quét">
+              </div>
+              <div class="ai-status" id="aiStatusBox">Chưa hiệu chỉnh sân. Bấm “Hiệu chỉnh 4 góc sân”, rồi click lần lượt: góc trên trái → trên phải → dưới phải → dưới trái.</div>
+              <div class="calibration-tip">AI trong file HTML này là bản beta chạy ngay trong trình duyệt: tự tách người/bóng theo màu + chuyển động, rồi sinh minimap 2D. Không phải model sâu như YOLO server-side.</div>
+              <div class="ai-kpis">
+                <div class="metric"><div class="k">Calibration</div><div class="v" id="aiCalibCount">0/4</div></div>
+                <div class="metric"><div class="k">Tracks</div><div class="v" id="aiTrackCount">0</div></div>
+                <div class="metric"><div class="k">Passes</div><div class="v" id="aiPassCount">0</div></div>
+              </div>
+              <div class="mini-pitch"><canvas id="miniMapCanvas" width="620" height="400"></canvas></div>
+              <div id="aiPassList" class="ai-list"></div>
+            </div>
+            <div class="panel-head" style="margin-top:10px"><h3>Clip & snapshot đã lưu</h3><span class="badge blue" id="clipCountBadge">0 items</span></div>
+            <div id="clipList" class="list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-page" id="tactical">
+        <div class="field-wrap">
+          <div class="panel">
+            <div class="panel-head no-print"><h3>Sơ đồ sân bóng chuẩn hơn</h3><div class="actions"><span class="badge green">Players + Objects + Draw</span><button class="btn small secondary field-stage-fullscreen-btn" id="toggleFieldFullscreenBtn">⛶ Toàn màn hình</button></div></div>
+            <div class="field-pro" id="field">
+              <div class="field-lines">
+                <div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+              </div>
+              <div class="half-line"></div>
+              <div class="center-circle"></div>
+              <div class="center-spot"></div>
+              <div class="penalty left"></div><div class="penalty right"></div>
+              <div class="penalty-spot left"></div><div class="penalty-spot right"></div>
+              <div class="six left"></div><div class="six right"></div>
+              <div class="arc left"></div><div class="arc right"></div>
+              <div class="goal left"></div><div class="goal right"></div>
+              <canvas id="fieldDrawCanvas" class="field-overlay"></canvas>
+              <div class="field-floatbar no-print" id="fieldFloatbar">
+                <div class="field-floatbar-group">
+                  <button class="btn small field-tool-btn" data-field-tool="select">Chọn</button>
+                  <button class="btn small field-tool-btn" data-field-tool="pen">Vẽ</button>
+                  <button class="btn small field-tool-btn" data-field-tool="arrow">Mũi tên</button>
+                  <button class="btn small field-tool-btn" data-field-tool="dasharrow">Chuyền</button>
+                  <button class="btn small field-tool-btn" data-field-tool="rect">Ô</button>
+                  <button class="btn small field-tool-btn" data-field-tool="polygon">Đa giác</button>
+                  <button class="btn small field-tool-btn" data-field-tool="eraser">Xóa</button>
+                </div>
+                <div class="field-floatbar-group">
+                  <button class="btn small field-object-btn" data-object-type="ball">⚽</button>
+                  <button class="btn small field-object-btn" data-object-type="cone">🔶</button>
+                  <button class="btn small field-object-btn" data-object-type="goal">🥅</button>
+                  <button class="btn small field-object-btn" data-object-type="pole">🟨</button>
+                  <button class="btn small field-object-btn" data-object-type="mannequin">🧍</button>
+                  <button class="btn small field-object-btn" data-object-type="ladder">#</button>
+                  <button class="btn small field-object-btn" data-object-type="hurdle">∩</button>
+                  <button class="btn small field-object-btn" data-object-type="disc">🔴</button>
+                  <button class="btn small field-object-btn" data-object-type="flag">🚩</button>
+                  <button class="btn small field-object-btn" data-object-type="bib">🦺</button>
+                  <button class="btn small field-object-btn" data-object-type="ring">⭕</button>
+                  <button class="btn small field-object-btn" data-object-type="rebounder">▦</button>
+                </div>
+                <div class="field-floatbar-group">
+                  <button class="btn small" id="finishPolygonBtnFs">Đóng đa giác</button>
+                  <button class="btn small danger" id="cancelPolygonBtnFs">Hủy</button>
+                  <button class="btn small warn" id="exitFieldFullscreenBtn">Thoát full</button>
+                </div>
+              </div>
+            </div>
+            <div class="field-topbar no-print">
+              <button class="btn small field-tool-btn active" data-field-tool="select">Chọn / kéo</button>
+              <button class="btn small field-tool-btn" data-field-tool="pen">Vẽ tự do</button>
+              <button class="btn small field-tool-btn" data-field-tool="arrow">Mũi tên</button>
+              <button class="btn small field-tool-btn" data-field-tool="dasharrow">Đường chuyền đứt nét</button>
+              <button class="btn small field-tool-btn" data-field-tool="rect">Ô khu vực</button>
+              <button class="btn small field-tool-btn" data-field-tool="polygon">Đa giác</button>
+              <button class="btn small field-tool-btn" data-field-tool="eraser">Xóa nét</button>
+            </div>
+            <div class="actions no-print" style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr">
+              <button class="btn small" id="finishPolygonBtn">Hoàn tất đa giác</button>
+              <button class="btn small danger" id="cancelPolygonBtn">Hủy đa giác</button>
+            </div>
+            <div class="polygon-tip no-print">Chế độ đa giác: chạm/click để thêm điểm, bấm “Hoàn tất đa giác” để đóng vùng chiếm lĩnh.</div>
+          </div>
+          <div class="bench">
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Đưa cầu thủ ra sân</h3><span class="badge blue">Avatar Token</span></div>
+              <div class="muted" style="margin-bottom:12px">Bấm để đưa cầu thủ ra sân cho Team A hoặc Team B. Kéo trực tiếp trên sân để sắp xếp.</div>
+              <div id="benchList" class="bench-list"></div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Dụng cụ sân tập</h3><span class="badge orange">Ball / Cone / Goal / Pole</span></div>
+              <div class="field-tool-grid">
+                <button class="btn small field-object-btn" data-object-type="ball">+ Bóng</button>
+                <button class="btn small field-object-btn" data-object-type="cone">+ Cọc chóp</button>
+                <button class="btn small field-object-btn" data-object-type="goal">+ Cầu môn</button>
+                <button class="btn small field-object-btn" data-object-type="pole">+ Cọc tiêu</button>
+                <button class="btn small field-object-btn" data-object-type="mannequin">+ Ma nơ canh</button>
+                <button class="btn small field-object-btn" data-object-type="ladder">+ Thang dây</button>
+                <button class="btn small field-object-btn" data-object-type="hurdle">+ Rào thấp</button>
+                <button class="btn small field-object-btn" data-object-type="disc">+ Đĩa marker</button>
+                <button class="btn small field-object-btn" data-object-type="flag">+ Cờ góc</button>
+                <button class="btn small field-object-btn" data-object-type="bib">+ Áo bib</button>
+                <button class="btn small field-object-btn" data-object-type="ring">+ Vòng mục tiêu</button>
+                <button class="btn small field-object-btn" data-object-type="rebounder">+ Bảng bật bóng</button>
+              </div>
+              <div class="field-note" style="margin-top:12px">Mỗi lần bấm sẽ thêm 1 dụng cụ vào sân. Kéo để đặt vị trí, double click để xóa.</div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Xoay & chỉnh dụng cụ</h3><span class="badge blue">Rotate</span></div>
+              <div class="object-controls">
+                <div class="object-selected-preview">
+                  <div class="object-selected-icon" id="selectedObjectIcon">⚪</div>
+                  <div>
+                    <strong id="selectedObjectName">Chưa chọn dụng cụ</strong>
+                    <div class="muted" id="selectedObjectMeta">Bấm vào dụng cụ trên sân để xoay hoặc xóa.</div>
+                  </div>
+                </div>
+                <div class="range-wrap">
+                  <div class="range-meta"><span>Góc xoay</span><strong id="objectRotateValue">0°</strong></div>
+                  <input id="objectRotateSlider" type="range" min="0" max="345" step="15" value="0">
+                </div>
+                <div class="actions">
+                  <button class="btn small" id="rotateLeftBtn">↺ -15°</button>
+                  <button class="btn small" id="rotateRightBtn">↻ +15°</button>
+                  <button class="btn small danger" id="deleteSelectedObjectBtn">Xóa dụng cụ</button>
+                  <button class="btn small" id="clearObjectSelectionBtn">Bỏ chọn</button>
+                </div>
+                <div class="field-note">Mẹo: có thể xoay cầu môn mini, bảng bật bóng, thang dây, rào thấp, ma nơ canh... để dựng bài tập đẹp hơn.</div>
+              </div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Thiết lập nhanh</h3><span class="badge orange">Quick Tools</span></div>
+              <div class="actions" style="display:grid;grid-template-columns:1fr 1fr">
+                <button class="btn small" id="autoLineupBtn">Auto 4-3-3</button>
+                <button class="btn small" id="clearFieldDrawingBtn">Xóa nét vẽ</button>
+                <button class="btn small" id="clearObjectsBtn">Xóa dụng cụ</button>
+                <button class="btn small danger" id="clearFieldBtn">Xóa toàn bộ sơ đồ</button>
+              </div>
+              <div class="range-wrap" style="margin-top:12px">
+                <div class="range-meta"><span>Preset sơ đồ chiến thuật</span><strong>1 chạm</strong></div>
+                <select id="formationPresetSelect">
+                  <option value="4-3-3">4-3-3</option>
+                  <option value="4-2-3-1">4-2-3-1</option>
+                  <option value="4-4-2">4-4-2</option>
+                  <option value="3-5-2">3-5-2</option>
+                  <option value="3-4-3">3-4-3</option>
+                  <option value="4-1-4-1">4-1-4-1</option>
+                  <option value="5-3-2">5-3-2</option>
+                  <option value="4-5-1">4-5-1</option>
+                  <option value="4-4-1-1">4-4-1-1</option>
+                  <option value="4-2-2-2">4-2-2-2</option>
+                  <option value="3-4-2-1">3-4-2-1</option>
+                  <option value="4-3-2-1">4-3-2-1</option>
+                  <option value="4-1-2-1-2">4-1-2-1-2</option>
+                  <option value="5-4-1">5-4-1</option>
+                </select>
+                <button class="btn small primary" id="applyFormationBtn">Áp dụng sơ đồ</button>
+              </div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Màu Team A / Team B</h3><span class="badge blue">Color Switch</span></div>
+              <div class="team-style-grid" id="teamStyleGrid"></div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Con cờ 2 đội</h3><span class="badge red">Generic Tokens</span></div>
+              <div class="field-tool-grid">
+                <button class="btn small secondary" id="addTeamAPieceBtn">+ Con cờ Team A</button>
+                <button class="btn small" id="addTeamBPieceBtn">+ Con cờ Team B</button>
+              </div>
+              <div class="field-note" style="margin-top:12px">Dùng khi chưa cần gắn với danh sách cầu thủ. Double click vào con cờ để xóa.</div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Mẫu con cờ</h3><span class="badge blue">Shape + Size</span></div>
+              <div class="piece-style-grid">
+                <div class="piece-style-actions">
+                  <button class="btn small primary" id="pieceStyleCircleBtn">Con cờ tròn</button>
+                  <button class="btn small" id="pieceStyleSquareBtn">Con cờ vuông</button>
+                </div>
+                <div class="range-wrap">
+                  <div class="range-meta"><span>Kích thước con cờ</span><strong id="pieceSizeValue">56px</strong></div>
+                  <input id="pieceSizeSlider" type="range" min="34" max="96" step="2" value="56">
+                </div>
+              </div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Video bài tập trên sơ đồ</h3><span class="badge green">Animation Drill</span></div>
+              <div class="tactical-video-grid">
+                <div class="tactical-video-actions">
+                  <button class="btn small primary" id="recordFrameBtn">📸 Ghi bước</button>
+                  <button class="btn small secondary" id="playAnimationBtn">▶ Chạy bài tập</button>
+                  <button class="btn small" id="stopAnimationBtn">⏹ Dừng</button>
+                  <button class="btn small danger" id="clearFramesBtn">🗑 Xóa các bước</button>
+                </div>
+                <div class="tactical-video-actions">
+                  <button class="btn small warn" id="exportDrillVideoBtn">🎬 Xuất video WebM</button>
+                  <button class="btn small" id="loadLastFrameBtn">↩ Nạp bước cuối</button>
+                </div>
+                <div class="range-wrap">
+                  <div class="range-meta"><span>Thời gian mỗi bước</span><strong id="frameDurationValue">1.2s</strong></div>
+                  <input id="frameDurationSlider" type="range" min="0.4" max="3" step="0.1" value="1.2">
+                </div>
+                <div class="field-note">Quy trình: sắp xếp sơ đồ → bấm “Ghi bước” → đổi vị trí cầu thủ/con cờ → ghi bước tiếp → chạy bài tập hoặc xuất WebM.</div>
+                <div id="framesList" class="frames-list"></div>
+                <canvas id="tacticalExportCanvas" class="export-canvas" width="1280" height="720"></canvas>
+              </div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>8 sơ đồ chiến thuật nhanh</h3><span class="badge orange">Quick Switch</span></div>
+              <div class="tactical-slot-grid" id="tacticalSlotGrid"></div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Mẫu bài tập chiến thuật</h3><span class="badge green">Template Save</span></div>
+              <div class="template-grid">
+                <input id="templateNameInput" placeholder="Tên mẫu chiến thuật / bài tập">
+                <div class="actions" style="display:grid;grid-template-columns:1fr 1fr">
+                  <button class="btn small primary" id="saveTemplateBtn">Lưu mẫu hiện tại</button>
+                  <button class="btn small" id="applyLatestTemplateBtn">Nạp mẫu mới nhất</button>
+                </div>
+                <div id="templateList" class="template-list"></div>
+              </div>
+            </div>
+            <div class="panel no-print">
+              <div class="panel-head"><h3>Gợi ý icon</h3><span class="badge blue">Legend</span></div>
+              <div class="field-legend">
+                <div class="legend-chip"><span class="legend-icon">⚽</span><span>Bóng</span></div>
+                <div class="legend-chip"><span class="legend-icon">🔶</span><span>Cọc chóp / cone</span></div>
+                <div class="legend-chip"><span class="legend-icon">🥅</span><span>Cầu môn mini</span></div>
+                <div class="legend-chip"><span class="legend-icon">🟨</span><span>Cọc tiêu / pole</span></div>
+                <div class="legend-chip"><span class="legend-icon">🧍</span><span>Ma nơ canh</span></div>
+                <div class="legend-chip"><span class="legend-icon">🦺</span><span>Áo bib / đội hình mini</span></div>
+                <div class="legend-chip"><span class="legend-icon">▦</span><span>Bảng bật bóng</span></div>
+                <div class="legend-chip"><span class="legend-icon">⭕</span><span>Vòng mục tiêu</span></div>
+                <div class="legend-chip"><span class="legend-icon">🧍</span><span>Ma nơ canh</span></div>
+                <div class="legend-chip"><span class="legend-icon">🪜</span><span>Thang dây</span></div>
+                <div class="legend-chip"><span class="legend-icon">⛳</span><span>Cờ góc</span></div>
+                <div class="legend-chip"><span class="legend-icon">🔹</span><span>Đĩa marker / rào thấp</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="mobile-nav no-print">
+    <div class="mobile-nav-scroll">
+      <button class="mobile-tab active" data-tab="dashboard">🏠 Dashboard</button>
+      <button class="mobile-tab" data-tab="players">👥 Players</button>
+      <button class="mobile-tab" data-tab="calendar">📅 Calendar</button>
+      <button class="mobile-tab" data-tab="trainings">🏃 Trainings</button>
+      <button class="mobile-tab" data-tab="matches">🏆 Matches</button>
+      <button class="mobile-tab" data-tab="analysis">🎥 Analysis</button>
+      <button class="mobile-tab" data-tab="tactical">🧠 Tactical</button>
+    </div>
+  </div>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'coachboard_pro_plus_v8';
+    const defaultState = {
+      coachNote:'',
+      players:[],
+      events:[],
+      trainings:[],
+      matches:[],
+      clips:[],
+      markers:[],
+      fieldTokens:[],
+      fieldPieces:[],
+      tacticalObjects:[],
+      tacticalDrawings:[],
+      tacticalTemplates:[],
+      pieceStyle:'circle',
+      pieceSize:56,
+      tacticalFrames:[],
+      frameDuration:1.2,
+      tacticalQuickSlots:[
+        {key:'attack',name:'Tấn công',updatedAt:'',snapshot:null},
+        {key:'defense',name:'Phòng ngự',updatedAt:'',snapshot:null},
+        {key:'corner',name:'Chống phạt góc',updatedAt:'',snapshot:null},
+        {key:'attackCorner',name:'Phạt góc tấn công',updatedAt:'',snapshot:null},
+        {key:'buildup',name:'Build-up từ sân nhà',updatedAt:'',snapshot:null},
+        {key:'highPress',name:'High Press',updatedAt:'',snapshot:null},
+        {key:'midBlock',name:'Mid Block',updatedAt:'',snapshot:null},
+        {key:'transition',name:'Chuyển trạng thái',updatedAt:'',snapshot:null},
+        {key:'counterPress',name:'Counter Press',updatedAt:'',snapshot:null},
+        {key:'lowBlock',name:'Low Block',updatedAt:'',snapshot:null},
+        {key:'restDefense',name:'Rest Defense',updatedAt:'',snapshot:null},
+        {key:'setPiece',name:'Set Piece',updatedAt:'',snapshot:null}
+      ],
+      teamStyles:{A:['#2d6cff','#55a7ff'],B:['#ff5066','#ff846e']},
+      videoViewMode:'2d',
+      aiCalibration:[],
+      aiDetections:[],
+      aiTracks:[],
+      aiPasses:[],
+      aiSettings:{sampleStep:0.6,maxFrames:180},
+      aiLastRun:''
+    };
+    let state = loadState();
+    let currentAvatar = '';
+    let currentTab = 'dashboard';
+    let selectedObjectId = null;
+    const OBJECT_META = {
+      ball:{name:'Bóng',icon:'⚽'},
+      cone:{name:'Cọc chóp',icon:'🔶'},
+      goal:{name:'Cầu môn mini',icon:'🥅'},
+      pole:{name:'Cọc tiêu',icon:'🟨'},
+      mannequin:{name:'Ma nơ canh',icon:'🧍'},
+      ladder:{name:'Thang dây',icon:'#'},
+      hurdle:{name:'Rào thấp',icon:'∩'},
+      disc:{name:'Đĩa marker',icon:'🔴'},
+      flag:{name:'Cờ góc',icon:'🚩'},
+      bib:{name:'Áo bib',icon:'🦺'},
+      ring:{name:'Vòng mục tiêu',icon:'⭕'},
+      rebounder:{name:'Bảng bật bóng',icon:'▦'}
+    };
+
+    function loadState(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return structuredClone(defaultState);
+        return Object.assign(structuredClone(defaultState), JSON.parse(raw));
+      }catch(e){
+        return structuredClone(defaultState);
+      }
+    }
+    function saveState(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+    function ensureQuickSlots(){
+      const defaults = structuredClone(defaultState.tacticalQuickSlots);
+      const existing = Array.isArray(state.tacticalQuickSlots) ? state.tacticalQuickSlots : [];
+      state.tacticalQuickSlots = defaults.map((slot, idx)=>({
+        ...slot,
+        ...(existing[idx] || {}),
+        name: (existing[idx] && existing[idx].name) || slot.name
+      }));
+    }
+    ensureQuickSlots();
+    function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+    function escapeHtml(v=''){ return v.replace(/[&<>'"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':'&quot;'}[m])); }
+    function fmtDateTime(date,time){
+      if(!date) return 'Chưa có ngày';
+      const d = new Date(date + (time?('T'+time):'T00:00'));
+      if(isNaN(d)) return [date,time].filter(Boolean).join(' ');
+      return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}) + (time ? (' • '+time) : '');
+    }
+    function formatTime(sec){
+      sec = Number(sec)||0;
+      const m = Math.floor(sec/60); const s = Math.floor(sec%60);
+      return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+
+    const pageTitle = document.getElementById('pageTitle');
+    const tabs = document.querySelectorAll('.tab-page');
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const mobileTabs = document.querySelectorAll('.mobile-tab');
+    function switchTab(tab){
+      currentTab = tab;
+      tabs.forEach(t=>t.classList.toggle('active', t.id===tab));
+      navBtns.forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+      mobileTabs.forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+      const label = ({dashboard:'Dashboard',players:'Players',calendar:'Calendar',trainings:'Trainings',matches:'Matches',analysis:'Video Analysis',tactical:'Tactical Board'})[tab] || 'CoachBoard';
+      pageTitle.textContent = label;
+      if(tab==='analysis') syncCanvasSize();
+      if(tab==='tactical'){ renderFieldTokens(); syncFieldCanvas(); redrawFieldAnnotations(); }
+    }
+    [...navBtns,...mobileTabs].forEach(btn=>btn.addEventListener('click',()=>switchTab(btn.dataset.tab)));
+
+    // Dashboard
+    document.getElementById('saveCoachNoteBtn').onclick = () => {
+      state.coachNote = document.getElementById('coachNote').value.trim();
+      saveState();
+      alert('Đã lưu ghi chú HLV');
+    };
+
+    // Player avatar upload
+    document.getElementById('playerAvatarInput').addEventListener('change', async (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      currentAvatar = await fileToDataUrl(file);
+      document.getElementById('avatarStatus').textContent = 'Đã chọn avatar: ' + file.name;
+    });
+
+    document.getElementById('addPlayerBtn').onclick = ()=>{
+      const name = document.getElementById('playerName').value.trim();
+      const number = document.getElementById('playerNumber').value.trim();
+      const position = document.getElementById('playerPosition').value;
+      const age = document.getElementById('playerAge').value.trim();
+      const foot = document.getElementById('playerFoot').value.trim();
+      const speed = document.getElementById('playerSpeed').value.trim();
+      const note = document.getElementById('playerNote').value.trim();
+      if(!name) return alert('Nhập tên cầu thủ');
+      state.players.unshift({id:uid(),name,number,position,age,foot,speed,note,avatar:currentAvatar});
+      saveState();
+      ['playerName','playerNumber','playerAge','playerFoot','playerSpeed','playerNote'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('playerPosition').value='GK';
+      currentAvatar='';
+      document.getElementById('playerAvatarInput').value='';
+      document.getElementById('avatarStatus').textContent='Chưa chọn ảnh đại diện.';
+      renderAll();
+    };
+
+    // Calendar / Training / Matches
+    document.getElementById('addEventBtn').onclick = ()=>{
+      const title = val('eventTitle'), type = val('eventType'), date = val('eventDate'), time = val('eventTime'), note = val('eventNote');
+      if(!title || !date) return alert('Nhập đủ tên sự kiện và ngày');
+      state.events.unshift({id:uid(),title,type,date,time,note}); saveState(); clearIds(['eventTitle','eventDate','eventTime','eventNote']); document.getElementById('eventType').value='Training'; renderAll();
+    };
+    document.getElementById('addTrainingBtn').onclick = ()=>{
+      const title = val('trainingTitle'), focus = val('trainingFocus'), duration = val('trainingDuration'), drills = val('trainingDrills');
+      if(!title) return alert('Nhập tên buổi tập');
+      state.trainings.unshift({id:uid(),title,focus,duration,drills}); saveState(); clearIds(['trainingTitle','trainingFocus','trainingDuration','trainingDrills']); renderAll();
+    };
+
+    document.getElementById('trainingUploadInput').addEventListener('change', async e=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const status = document.getElementById('trainingUploadStatus');
+      status.textContent = 'Đang đọc giáo án: ' + file.name;
+      try{
+        const text = await parseTrainingFile(file);
+        const info = inferTrainingFields(text, file.name);
+        document.getElementById('trainingTitle').value = info.title || '';
+        document.getElementById('trainingFocus').value = info.focus || '';
+        document.getElementById('trainingDuration').value = info.duration || '';
+        document.getElementById('trainingDrills').value = info.drills || '';
+        status.textContent = 'Đã nạp giáo án: ' + file.name + ' — kiểm tra lại rồi bấm "Lưu giáo án".';
+      }catch(err){
+        console.error(err);
+        status.textContent = 'Không đọc được file này. Hãy thử TXT, MD, JSON, DOCX hoặc PDF.';
+        alert('Không đọc được giáo án từ file đã chọn.');
+      }
+    });
+    document.getElementById('addMatchBtn').onclick = ()=>{
+      const opponent = val('matchOpponent'), venue = val('matchVenue'), date = val('matchDate'), score = val('matchScore'), note = val('matchNote');
+      if(!opponent || !date) return alert('Nhập đối thủ và ngày');
+      state.matches.unshift({id:uid(),opponent,venue,date,score,note}); saveState(); clearIds(['matchOpponent','matchVenue','matchDate','matchScore','matchNote']); renderAll();
+    };
+
+    function val(id){ return document.getElementById(id).value.trim(); }
+    function clearIds(ids){ ids.forEach(id=>document.getElementById(id).value=''); }
+
+    async function parseTrainingFile(file){
+      const ext = (file.name.split('.').pop() || '').toLowerCase();
+      if(['txt','md','json'].includes(ext)){
+        const raw = await file.text();
+        if(ext==='json'){
+          try{
+            const obj = JSON.parse(raw);
+            return typeof obj === 'string' ? obj : JSON.stringify(obj, null, 2);
+          }catch(e){
+            return raw;
+          }
+        }
+        return raw;
+      }
+      if(ext==='docx'){
+        if(!window.mammoth) throw new Error('Thiếu thư viện đọc DOCX');
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({arrayBuffer});
+        return result.value || '';
+      }
+      if(ext==='pdf'){
+        if(!window.pdfjsLib) throw new Error('Thiếu thư viện đọc PDF');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.3.136/pdf.worker.min.js';
+        const buffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buffer}).promise;
+        let fullText = '';
+        for(let i=1;i<=pdf.numPages;i++){
+          const page = await pdf.getPage(i);
+          const content = await page.getTextContent();
+          const pageText = content.items.map(item=>item.str).join(' ');
+          fullText += '\n\n=== Trang '+i+' ===\n' + pageText;
+        }
+        return fullText.trim();
+      }
+      throw new Error('Định dạng chưa hỗ trợ');
+    }
+    function inferTrainingFields(text, filename=''){
+      const clean = (text || '').replace(/\r/g,'').trim();
+      const lines = clean.split('\n').map(x=>x.trim()).filter(Boolean);
+      const titleFromFile = filename.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim();
+      let title = lines[0] || titleFromFile || 'Giáo án tải lên';
+      if(title.length > 90) title = titleFromFile || 'Giáo án tải lên';
+      const focusMatch = clean.match(/(?:trọng tâm|mục tiêu|focus)\s*[:\-]\s*(.+)/i);
+      const durationMatch = clean.match(/(?:thời lượng|duration|time)\s*[:\-]\s*(.+)/i);
+      return {
+        title,
+        focus: focusMatch ? focusMatch[1].trim().slice(0,120) : '',
+        duration: durationMatch ? durationMatch[1].trim().slice(0,60) : '',
+        drills: clean
+      };
+    }
+
+
+    function removeBy(type,id){
+      state[type] = state[type].filter(x=>x.id!==id);
+      if(type==='players') state.fieldTokens = state.fieldTokens.filter(t=>t.playerId!==id);
+      saveState(); renderAll();
+    }
+
+    function renderPlayers(){
+      const wrap = document.getElementById('playerGrid');
+      document.getElementById('playerCountBadge').textContent = state.players.length + ' players';
+      if(!state.players.length){ wrap.innerHTML = '<div class="list-card muted">Chưa có cầu thủ nào.</div>'; return; }
+      wrap.innerHTML = state.players.map(p=>`
+        <div class="player-card">
+          <div class="player-top">
+            <div class="avatar">${p.avatar ? `<img src="${p.avatar}" alt="${escapeHtml(p.name)}">` : escapeHtml((p.name||'?').slice(0,1).toUpperCase())}</div>
+            <div class="player-meta">
+              <div class="jersey">#${escapeHtml(p.number||'--')}</div>
+              <strong>${escapeHtml(p.name)}</strong>
+              <span class="muted">${escapeHtml(p.position||'-')} ${p.age ? '• '+escapeHtml(String(p.age))+' tuổi' : ''}</span>
+            </div>
+          </div>
+          <div class="chips">
+            ${p.foot ? `<span class="chip">Chân ${escapeHtml(p.foot)}</span>` : ''}
+            ${p.speed ? `<span class="chip">${escapeHtml(p.speed)}</span>` : ''}
+          </div>
+          <div class="muted" style="min-height:38px">${escapeHtml(p.note||'Chưa có ghi chú chuyên môn')}</div>
+          <div class="player-actions no-print">
+            <button class="btn small" onclick="addTokenToField('${p.id}')">Đưa ra sân</button>
+            <button class="btn small danger" onclick="removeBy('players','${p.id}')">Xóa</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderCalendar(){
+      const list = document.getElementById('calendarList');
+      const items = [...state.events].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+      if(!items.length){ list.innerHTML = '<div class="list-card muted">Chưa có sự kiện.</div>'; return; }
+      list.innerHTML = items.map(e=>`
+        <div class="schedule-item">
+          <div class="schedule-head"><strong>${escapeHtml(e.title)}</strong><span class="badge ${e.type==='Training'?'green':e.type==='Match'?'red':'blue'}">${escapeHtml(e.type)}</span></div>
+          <div class="muted" style="margin-top:8px">${fmtDateTime(e.date,e.time)}</div>
+          ${e.note ? `<div style="margin-top:10px">${escapeHtml(e.note)}</div>` : ''}
+          <div class="player-actions no-print" style="margin-top:12px"><button class="btn small danger" onclick="removeBy('events','${e.id}')">Xóa</button></div>
+        </div>
+      `).join('');
+
+      const upcoming = document.getElementById('upcomingList');
+      upcoming.innerHTML = items.slice(0,5).map(e=>`
+        <div class="list-card"><strong>${escapeHtml(e.title)}</strong><div class="muted" style="margin-top:6px">${fmtDateTime(e.date,e.time)}</div><div style="margin-top:8px"><span class="badge ${e.type==='Training'?'green':e.type==='Match'?'red':'blue'}">${escapeHtml(e.type)}</span></div></div>
+      `).join('') || '<div class="list-card muted">Chưa có lịch gần nhất.</div>';
+    }
+
+    function renderTrainings(){
+      document.getElementById('trainingCountBadge').textContent = state.trainings.length + ' plans';
+      const list = document.getElementById('trainingList');
+      if(!state.trainings.length){ list.innerHTML = '<div class="list-card muted">Chưa có giáo án.</div>'; return; }
+      list.innerHTML = state.trainings.map(t=>`
+        <div class="training-item">
+          <div class="training-head"><strong>${escapeHtml(t.title)}</strong><span class="badge green">${escapeHtml(t.duration||'N/A')}</span></div>
+          <div class="muted" style="margin-top:8px">Trọng tâm: ${escapeHtml(t.focus||'Chưa ghi')}</div>
+          <div style="margin-top:10px;white-space:pre-wrap">${escapeHtml(t.drills||'')}</div>
+          <div class="player-actions no-print" style="margin-top:12px"><button class="btn small danger" onclick="removeBy('trainings','${t.id}')">Xóa</button></div>
+        </div>
+      `).join('');
+    }
+
+    function renderMatches(){
+      document.getElementById('matchCountBadge').textContent = state.matches.length + ' matches';
+      const list = document.getElementById('matchList');
+      if(!state.matches.length){ list.innerHTML = '<div class="list-card muted">Chưa có trận đấu.</div>'; return; }
+      list.innerHTML = state.matches.map(m=>`
+        <div class="match-item">
+          <div class="match-head"><strong>vs ${escapeHtml(m.opponent)}</strong><span class="badge red">${escapeHtml(m.score||'Chưa có tỷ số')}</span></div>
+          <div class="muted" style="margin-top:8px">${fmtDateTime(m.date,'')} ${m.venue ? '• '+escapeHtml(m.venue) : ''}</div>
+          ${m.note ? `<div style="margin-top:10px;white-space:pre-wrap">${escapeHtml(m.note)}</div>` : ''}
+          <div class="player-actions no-print" style="margin-top:12px"><button class="btn small danger" onclick="removeBy('matches','${m.id}')">Xóa</button></div>
+        </div>
+      `).join('');
+    }
+
+    // Tactical board
+    window.addTokenToField = function(playerId, team='A'){
+      const p = state.players.find(x=>x.id===playerId);
+      if(!p) return;
+      const exists = state.fieldTokens.some(t=>t.playerId===playerId);
+      if(exists) return alert('Cầu thủ này đã có trên sân');
+      state.fieldTokens.push({id:uid(),playerId,x:8+Math.random()*20,y:18+Math.random()*60,team});
+      saveState(); renderFieldTokens();
+    };
+    window.toggleTokenTeam = function(playerId){
+      const token = state.fieldTokens.find(t=>t.playerId===playerId);
+      if(!token) return;
+      token.team = token.team==='A' ? 'B' : 'A';
+      saveState(); renderFieldTokens();
+    };
+    function getTeamColors(team){
+      const fallback = team==='A' ? ['#2d6cff','#55a7ff'] : ['#ff5066','#ff846e'];
+      return Array.isArray(state.teamStyles?.[team]) ? state.teamStyles[team] : fallback;
+    }
+    const TEAM_PRESETS = {
+      A:[['#2d6cff','#55a7ff'],['#1a9b63','#40d49b'],['#6b4cff','#9b7bff'],['#ff8f1f','#ffd166']],
+      B:[['#ff5066','#ff846e'],['#d93838','#ff7b7b'],['#00a7c8','#4de7ff'],['#6c7280','#b6c0d3']]
+    };
+    function renderTeamStyles(){
+      const wrap = document.getElementById('teamStyleGrid');
+      if(!wrap) return;
+      wrap.innerHTML = ['A','B'].map(team=>{
+        const current = getTeamColors(team).join('|');
+        const swatches = TEAM_PRESETS[team].map((pair,idx)=>`<button class="team-swatch ${pair.join('|')===current?'active':''}" title="Team ${team}" style="background:linear-gradient(135deg,${pair[0]},${pair[1]})" onclick="setTeamColors('${team}', '${pair[0]}', '${pair[1]}')"></button>`).join('');
+        return `<div class="team-color-set"><div class="team-color-title"><span>Team ${team}</span><span class="badge ${team==='A'?'blue':'red'}">${getTeamColors(team)[0]}</span></div><div class="team-swatch-row">${swatches}</div></div>`;
+      }).join('');
+    }
+    window.setTeamColors = function(team, c1, c2){
+      state.teamStyles[team] = [c1,c2];
+      saveState(); renderFieldTokens(); renderTeamStyles();
+    };
+    function cloneTacticalState(){
+      return {
+        fieldTokens: JSON.parse(JSON.stringify(state.fieldTokens)),
+        fieldPieces: JSON.parse(JSON.stringify(state.fieldPieces || [])),
+        tacticalObjects: JSON.parse(JSON.stringify(state.tacticalObjects)),
+        tacticalDrawings: JSON.parse(JSON.stringify(state.tacticalDrawings)),
+        teamStyles: JSON.parse(JSON.stringify(state.teamStyles)),
+        pieceStyle: state.pieceStyle || 'circle',
+        pieceSize: Number(state.pieceSize || 56)
+      };
+    }
+    function applyTacticalSnapshot(snapshot){
+      state.fieldTokens = JSON.parse(JSON.stringify(snapshot.fieldTokens || []));
+      state.fieldPieces = JSON.parse(JSON.stringify(snapshot.fieldPieces || []));
+      state.tacticalObjects = JSON.parse(JSON.stringify(snapshot.tacticalObjects || []));
+      state.tacticalDrawings = JSON.parse(JSON.stringify(snapshot.tacticalDrawings || []));
+      if(snapshot.teamStyles) state.teamStyles = JSON.parse(JSON.stringify(snapshot.teamStyles));
+      if(snapshot.pieceStyle) state.pieceStyle = snapshot.pieceStyle;
+      if(snapshot.pieceSize) state.pieceSize = Number(snapshot.pieceSize);
+      saveState(); renderFieldTokens(); renderTeamStyles(); redrawFieldAnnotations(); renderTemplateList(); renderTacticalQuickSlots(); syncPieceControls(); renderFramesList();
+    }
+    function renderTemplateList(){
+      const list = document.getElementById('templateList');
+      if(!list) return;
+      if(!state.tacticalTemplates.length){ list.innerHTML = '<div class="template-card muted">Chưa có mẫu nào được lưu.</div>'; return; }
+      list.innerHTML = state.tacticalTemplates.map(t=>`<div class="template-card"><strong>${escapeHtml(t.name)}</strong><div class="muted" style="margin-top:6px">${new Date(t.createdAt).toLocaleString('vi-VN')}</div><div class="actions" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr"><button class="btn small" onclick="loadTacticalTemplate('${t.id}')">Nạp mẫu</button><button class="btn small danger" onclick="deleteTacticalTemplate('${t.id}')">Xóa</button></div></div>`).join('');
+    }
+    window.loadTacticalTemplate = function(id){
+      const item = state.tacticalTemplates.find(t=>t.id===id);
+      if(!item) return;
+      applyTacticalSnapshot(item.snapshot);
+    };
+    window.deleteTacticalTemplate = function(id){
+      state.tacticalTemplates = state.tacticalTemplates.filter(t=>t.id!==id);
+      saveState(); renderTemplateList();
+    };
+    function renderTacticalQuickSlots(){
+      const wrap = document.getElementById('tacticalSlotGrid');
+      if(!wrap) return;
+      ensureQuickSlots();
+      wrap.innerHTML = state.tacticalQuickSlots.map((slot, idx)=>`<div class="tactical-slot"><h4>${escapeHtml(slot.name)}</h4><div class="muted">${slot.updatedAt ? 'Cập nhật: ' + new Date(slot.updatedAt).toLocaleString('vi-VN') : 'Chưa lưu sơ đồ'}</div><div class="actions" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr"><button class="btn small primary" onclick="saveQuickSlot(${idx})">Lưu</button><button class="btn small" onclick="loadQuickSlot(${idx})">Nạp</button></div></div>`).join('');
+    }
+    window.saveQuickSlot = function(idx){
+      ensureQuickSlots();
+      const slot = state.tacticalQuickSlots[idx];
+      if(!slot) return;
+      slot.snapshot = cloneTacticalState();
+      slot.updatedAt = new Date().toISOString();
+      saveState();
+      renderTacticalQuickSlots();
+    syncSelectedObjectControls();
+    };
+    window.loadQuickSlot = function(idx){
+      ensureQuickSlots();
+      const slot = state.tacticalQuickSlots[idx];
+      if(!slot || !slot.snapshot) return alert('Sơ đồ này chưa được lưu');
+      applyTacticalSnapshot(slot.snapshot);
+    };
+    document.getElementById('saveTemplateBtn').onclick = ()=>{
+      const name = document.getElementById('templateNameInput').value.trim() || ('Mẫu chiến thuật ' + (state.tacticalTemplates.length+1));
+      state.tacticalTemplates.unshift({id:uid(),name,createdAt:new Date().toISOString(),snapshot:cloneTacticalState()});
+      saveState(); renderTemplateList(); document.getElementById('templateNameInput').value=''; alert('Đã lưu mẫu chiến thuật');
+    };
+    document.getElementById('applyLatestTemplateBtn').onclick = ()=>{
+      if(!state.tacticalTemplates.length) return alert('Chưa có mẫu chiến thuật nào');
+      applyTacticalSnapshot(state.tacticalTemplates[0].snapshot);
+    };
+
+    let fieldTool = 'select';
+    const field = document.getElementById('field');
+    field.addEventListener('click', e=>{ if(e.target === field || e.target.classList.contains('field-lines') || e.target.classList.contains('field-overlay')){ selectedObjectId = null; renderFieldTokens(); syncSelectedObjectControls(); }});
+    const fieldCanvas = document.getElementById('fieldDrawCanvas');
+    const fieldCtx = fieldCanvas.getContext('2d');
+    let fieldDrawing = false, fieldStartPt = null, fieldPenPath = [], polygonDraft = [];
+    let fieldPointerId = null, fieldPreviewPoint = null;
+    const fieldDrawColor = '#ffffff';
+    const fieldLineWidth = 4;
+
+    function syncFieldCanvas(){
+      const rect = field.getBoundingClientRect();
+      if(!rect.width || !rect.height) return;
+      fieldCanvas.width = rect.width;
+      fieldCanvas.height = rect.height;
+      redrawFieldAnnotations();
+    }
+
+    const fieldFullscreenBtn = document.getElementById('toggleFieldFullscreenBtn');
+    const exitFieldFullscreenBtn = document.getElementById('exitFieldFullscreenBtn');
+    async function toggleFieldFullscreen(forceExit=false){
+      try{
+        if(forceExit){
+          if(document.fullscreenElement===field && document.exitFullscreen) await document.exitFullscreen();
+          return;
+        }
+        if(document.fullscreenElement===field){
+          if(document.exitFullscreen) await document.exitFullscreen();
+        }else if(field.requestFullscreen){
+          await field.requestFullscreen();
+        }
+      }catch(err){ console.error(err); }
+    }
+    if(fieldFullscreenBtn) fieldFullscreenBtn.addEventListener('click', ()=>toggleFieldFullscreen(false));
+    if(exitFieldFullscreenBtn) exitFieldFullscreenBtn.addEventListener('click', ()=>toggleFieldFullscreen(true));
+    document.getElementById('finishPolygonBtnFs')?.addEventListener('click', ()=>document.getElementById('finishPolygonBtn').click());
+    document.getElementById('cancelPolygonBtnFs')?.addEventListener('click', ()=>document.getElementById('cancelPolygonBtn').click());
+    document.addEventListener('fullscreenchange', ()=>{
+      if(fieldFullscreenBtn) fieldFullscreenBtn.textContent = document.fullscreenElement===field ? '⤢ Thu nhỏ' : '⛶ Toàn màn hình';
+      setTimeout(()=>{ syncFieldCanvas(); renderFieldTokens(); }, 80);
+    });
+
+    document.getElementById('clearFieldBtn').onclick = ()=>{
+      state.fieldTokens=[]; 
+      state.fieldPieces=[]; 
+      state.tacticalObjects=[]; 
+      state.tacticalDrawings=[]; 
+      saveState(); 
+      renderFieldTokens(); 
+      redrawFieldAnnotations();
+    };
+    document.getElementById('clearObjectsBtn').onclick = ()=>{
+      state.tacticalObjects=[]; saveState(); renderFieldTokens();
+    };
+    document.getElementById('clearFieldDrawingBtn').onclick = ()=>{
+      state.tacticalDrawings=[]; saveState(); redrawFieldAnnotations();
+    };
+    const FORMATION_PRESETS = {
+      '4-3-3': [[8,44],[21,17],[21,35],[21,53],[21,71],[39,22],[39,44],[39,66],[58,18],[58,44],[58,70]],
+      '4-2-3-1': [[8,44],[21,17],[21,35],[21,53],[21,71],[35,32],[35,56],[50,18],[50,44],[50,70],[63,44]],
+      '4-4-2': [[8,44],[21,17],[21,35],[21,53],[21,71],[39,18],[39,32],[39,56],[39,70],[60,34],[60,54]],
+      '3-5-2': [[8,44],[22,26],[22,44],[22,62],[38,14],[38,30],[38,44],[38,58],[38,74],[60,34],[60,54]],
+      '3-4-3': [[8,44],[22,26],[22,44],[22,62],[40,18],[40,32],[40,56],[40,70],[60,20],[60,44],[60,68]],
+      '4-1-4-1': [[8,44],[21,17],[21,35],[21,53],[21,71],[34,44],[48,16],[48,34],[48,54],[48,72],[64,44]],
+      '5-3-2': [[8,44],[20,12],[20,28],[20,44],[20,60],[20,76],[40,26],[40,44],[40,62],[60,34],[60,54]],
+      '4-5-1': [[8,44],[21,17],[21,35],[21,53],[21,71],[41,12],[41,28],[41,44],[41,60],[41,76],[64,44]]
+    };
+    function applyFormationPreset(name='4-3-3'){
+      const formation = FORMATION_PRESETS[name] || FORMATION_PRESETS['4-3-3'];
+      state.fieldTokens = state.players.slice(0,11).map((p,i)=>({id:uid(),playerId:p.id,x:formation[i]?.[0]||10,y:formation[i]?.[1]||10,team:'A'}));
+      state.fieldPieces = [];
+      saveState(); renderFieldTokens();
+    }
+    document.getElementById('autoLineupBtn').onclick = ()=> applyFormationPreset('4-3-3');
+    document.getElementById('applyFormationBtn').onclick = ()=> applyFormationPreset(document.getElementById('formationPresetSelect').value);
+
+    document.querySelectorAll('.field-tool-btn').forEach((btn,idx)=>{
+      if(idx===0) btn.classList.add('active');
+      btn.addEventListener('click',()=>{
+        document.querySelectorAll('.field-tool-btn').forEach(x=>x.classList.remove('active'));
+        btn.classList.add('active');
+        fieldTool = btn.dataset.fieldTool;
+        fieldCanvas.style.pointerEvents = ['pen','arrow','dasharrow','rect','polygon','eraser'].includes(fieldTool) ? 'auto' : 'none';
+        if(fieldTool!=='polygon'){ polygonDraft = []; fieldPreviewPoint = null; redrawFieldAnnotations(); }
+      });
+    });
+    document.querySelectorAll('.field-object-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const type = btn.dataset.objectType;
+        state.tacticalObjects.push({id:uid(),type,x:50+Math.random()*8,y:50+Math.random()*8,rotation:0});
+        saveState();
+        renderFieldTokens();
+      });
+    });
+
+    function nextPieceLabel(team){
+      const prefix = team === 'A' ? 'A' : 'B';
+      const nums = (state.fieldPieces || []).filter(p=>p.team===team).map(p=>Number(String(p.label||'').replace(/[^0-9]/g,''))||0);
+      const next = (nums.length ? Math.max(...nums) : 0) + 1;
+      return prefix + next;
+    }
+    function addGenericPiece(team){
+      state.fieldPieces = state.fieldPieces || [];
+      state.fieldPieces.push({id:uid(),team,label:nextPieceLabel(team),x:46+Math.random()*10,y:40+Math.random()*14});
+      saveState();
+      renderFieldTokens();
+    }
+    document.getElementById('addTeamAPieceBtn').addEventListener('click',()=>addGenericPiece('A'));
+    document.getElementById('addTeamBPieceBtn').addEventListener('click',()=>addGenericPiece('B'));
+    document.getElementById('finishPolygonBtn').onclick = ()=>finishPolygonDraft();
+    document.getElementById('cancelPolygonBtn').onclick = ()=>{ polygonDraft = []; fieldPreviewPoint = null; redrawFieldAnnotations(); };
+    document.getElementById('objectRotateSlider').addEventListener('input', e=>rotateSelectedObject(0, Number(e.target.value || 0)));
+    document.getElementById('rotateLeftBtn').addEventListener('click', ()=>rotateSelectedObject(-15));
+    document.getElementById('rotateRightBtn').addEventListener('click', ()=>rotateSelectedObject(15));
+    document.getElementById('deleteSelectedObjectBtn').addEventListener('click', ()=>{
+      const obj = getSelectedTacticalObject();
+      if(!obj) return;
+      state.tacticalObjects = state.tacticalObjects.filter(t=>t.id!==obj.id);
+      selectedObjectId = null;
+      saveState();
+      renderFieldTokens();
+      syncSelectedObjectControls();
+    });
+    document.getElementById('clearObjectSelectionBtn').addEventListener('click', ()=>{ selectedObjectId = null; renderFieldTokens(); syncSelectedObjectControls(); });
+
+    function syncPieceControls(){
+      state.pieceStyle = state.pieceStyle || 'circle';
+      state.pieceSize = Number(state.pieceSize || 56);
+      const slider = document.getElementById('pieceSizeSlider');
+      if(slider) slider.value = String(state.pieceSize);
+      const sizeValue = document.getElementById('pieceSizeValue');
+      if(sizeValue) sizeValue.textContent = state.pieceSize + 'px';
+      const circleBtn = document.getElementById('pieceStyleCircleBtn');
+      const squareBtn = document.getElementById('pieceStyleSquareBtn');
+      if(circleBtn) circleBtn.classList.toggle('primary', state.pieceStyle === 'circle');
+      if(circleBtn) circleBtn.classList.toggle('secondary', state.pieceStyle !== 'circle');
+      if(squareBtn) squareBtn.classList.toggle('primary', state.pieceStyle === 'square');
+      if(squareBtn) squareBtn.classList.toggle('secondary', state.pieceStyle !== 'square');
+    }
+    window.setPieceStyle = function(style){
+      state.pieceStyle = style === 'square' ? 'square' : 'circle';
+      saveState();
+      syncPieceControls();
+      renderFieldTokens();
+    };
+    document.getElementById('pieceStyleCircleBtn').addEventListener('click',()=>setPieceStyle('circle'));
+    document.getElementById('pieceStyleSquareBtn').addEventListener('click',()=>setPieceStyle('square'));
+    document.getElementById('pieceSizeSlider').addEventListener('input', e=>{
+      state.pieceSize = Number(e.target.value || 56);
+      document.getElementById('pieceSizeValue').textContent = state.pieceSize + 'px';
+      saveState();
+      renderFieldTokens();
+    });
+
+    function renderBench(){
+      const list = document.getElementById('benchList');
+      if(!state.players.length){ list.innerHTML = '<div class="bench-card muted">Chưa có cầu thủ.</div>'; return; }
+      const pieceCountA = (state.fieldPieces || []).filter(p=>p.team==='A').length;
+      const pieceCountB = (state.fieldPieces || []).filter(p=>p.team==='B').length;
+      list.innerHTML = `<div class="bench-card"><strong>Con cờ đang có</strong><div class="muted" style="margin-top:6px">Team A: ${pieceCountA} • Team B: ${pieceCountB}</div></div>` + state.players.map(p=>{
+        const token = state.fieldTokens.find(t=>t.playerId===p.id);
+        const onField = !!token;
+        return `<div class="bench-player">
+          <div class="bench-avatar">${p.avatar ? `<img src="${p.avatar}" alt="">` : escapeHtml((p.name||'?')[0].toUpperCase())}</div>
+          <div style="flex:1;min-width:0"><strong style="display:block">${escapeHtml(p.name)}</strong><div class="muted">#${escapeHtml(p.number||'--')} • ${escapeHtml(p.position||'')} ${token ? '• Team '+token.team : ''}</div></div>
+          ${onField
+            ? `<button class="btn small" onclick="toggleTokenTeam('${p.id}')">Đổi A/B</button>`
+            : `<div style="display:flex;gap:6px"><button class="btn small secondary" onclick="addTokenToField('${p.id}','A')">Ra sân A</button><button class="btn small" onclick="addTokenToField('${p.id}','B')">Ra sân B</button></div>`}
+        </div>`;
+      }).join('');
+    }
+
+
+    function getObjectDims(type){
+      const map = {ball:{w:30,h:30},cone:{w:30,h:42},goal:{w:68,h:46},pole:{w:24,h:62},mannequin:{w:28,h:64},ladder:{w:78,h:26},hurdle:{w:52,h:32},disc:{w:26,h:26},flag:{w:34,h:60},bib:{w:34,h:32},ring:{w:34,h:34},rebounder:{w:64,h:48}};
+      return map[type] || {w:36,h:36};
+    }
+    function getSelectedTacticalObject(){
+      return (state.tacticalObjects || []).find(o=>o.id===selectedObjectId) || null;
+    }
+    function selectTacticalObject(id){
+      selectedObjectId = id;
+      renderFieldTokens();
+      syncSelectedObjectControls();
+    }
+    function syncSelectedObjectControls(){
+      const obj = getSelectedTacticalObject();
+      const iconEl = document.getElementById('selectedObjectIcon');
+      const nameEl = document.getElementById('selectedObjectName');
+      const metaEl = document.getElementById('selectedObjectMeta');
+      const slider = document.getElementById('objectRotateSlider');
+      const val = document.getElementById('objectRotateValue');
+      if(!iconEl || !nameEl || !metaEl || !slider || !val) return;
+      if(!obj){
+        iconEl.textContent = '⚪';
+        nameEl.textContent = 'Chưa chọn dụng cụ';
+        metaEl.textContent = 'Bấm vào dụng cụ trên sân để xoay hoặc xóa.';
+        slider.value = '0';
+        val.textContent = '0°';
+        return;
+      }
+      const meta = OBJECT_META[obj.type] || {name:'Dụng cụ',icon:'⬜'};
+      iconEl.textContent = meta.icon;
+      nameEl.textContent = meta.name;
+      metaEl.textContent = `Xoay ${Number(obj.rotation||0)}° • Double click để xóa`;
+      slider.value = String(Number(obj.rotation||0));
+      val.textContent = `${Number(obj.rotation||0)}°`;
+    }
+    function rotateSelectedObject(delta=0, absolute=null){
+      const obj = getSelectedTacticalObject();
+      if(!obj) return;
+      const next = absolute===null ? Number(obj.rotation||0) + delta : absolute;
+      obj.rotation = ((next % 360) + 360) % 360;
+      saveState();
+      renderFieldTokens();
+      syncSelectedObjectControls();
+    }
+
+    function renderFieldTokens(){
+      field.querySelectorAll('.player-token,.field-object').forEach(el=>el.remove());
+      state.fieldTokens.forEach(token=>{
+        const p = state.players.find(x=>x.id===token.playerId);
+        if(!p) return;
+        const el = document.createElement('div');
+        const [c1,c2] = getTeamColors(token.team);
+        el.className = 'player-token ' + (token.team==='A' ? 'token-a' : 'token-b');
+        el.style.setProperty('--team-color', c1);
+        el.style.setProperty('--team-color-2', c2);
+        el.style.left = `calc(${token.x}% - 31px)`;
+        el.style.top = `calc(${token.y}% - 31px)`;
+        el.dataset.id = token.id;
+        el.dataset.team = token.team;
+        el.innerHTML = p.avatar ? `<img src="${p.avatar}" alt="">` : `<div class="fallback">${escapeHtml((p.name||'?').slice(0,1).toUpperCase())}</div>`;
+        const num = document.createElement('div');
+        num.className = 'token-number';
+        num.textContent = p.number || '--';
+        el.appendChild(num);
+        field.appendChild(el);
+        makeDraggable(el, token, true);
+        el.addEventListener('dblclick',()=>{
+          state.fieldTokens = state.fieldTokens.filter(t=>t.id!==token.id); saveState(); renderFieldTokens();
+        });
+      });
+
+      (state.fieldPieces || []).forEach(piece=>{
+        const el = document.createElement('div');
+        const [c1,c2] = getTeamColors(piece.team);
+        const pieceSize = Number(state.pieceSize || 56);
+        el.className = 'player-token ' + (piece.team==='A' ? 'token-a' : 'token-b') + (state.pieceStyle === 'circle' ? ' circle-piece' : '');
+        el.style.setProperty('--team-color', c1);
+        el.style.setProperty('--team-color-2', c2);
+        el.style.setProperty('--piece-size', pieceSize + 'px');
+        const offset = pieceSize / 2;
+        el.style.left = `calc(${piece.x}% - ${offset}px)`;
+        el.style.top = `calc(${piece.y}% - ${offset}px)`;
+        el.dataset.id = piece.id;
+        el.dataset.team = piece.team;
+        el.innerHTML = `<div class="fallback">${escapeHtml(piece.label || (piece.team==='A' ? 'A' : 'B'))}</div>`;
+
+        field.appendChild(el);
+        makeDraggable(el, piece, true, {x:offset,y:offset});
+        el.addEventListener('dblclick',()=>{
+          state.fieldPieces = (state.fieldPieces || []).filter(t=>t.id!==piece.id); saveState(); renderFieldTokens();
+        });
+      });
+
+      state.tacticalObjects.forEach(obj=>{
+        const el = document.createElement('div');
+        el.className = `field-object ${obj.type}`;
+        const objectOffsets = {ball:{x:18,y:18},cone:{x:18,y:18},goal:{x:34,y:18},pole:{x:18,y:18},mannequin:{x:18,y:28},ladder:{x:38,y:14},hurdle:{x:24,y:18},disc:{x:16,y:10},flag:{x:12,y:28}};
+        const objectTitles = {ball:'Bóng',cone:'Cone',goal:'Cầu môn',pole:'Cọc tiêu',mannequin:'Ma nơ canh',ladder:'Thang dây',hurdle:'Rào thấp',disc:'Đĩa marker',flag:'Cờ góc'};
+        const offset = objectOffsets[obj.type] || {x:18,y:18};
+        el.style.left = `calc(${obj.x}% - ${offset.x}px)`;
+        el.style.top = `calc(${obj.y}% - ${offset.y}px)`;
+        el.dataset.id = obj.id;
+        el.title = objectTitles[obj.type] || 'Dụng cụ';
+        field.appendChild(el);
+        makeDraggable(el, obj, false, offset);
+        el.addEventListener('dblclick',()=>{
+          state.tacticalObjects = state.tacticalObjects.filter(t=>t.id!==obj.id); saveState(); renderFieldTokens();
+        });
+      });
+
+      renderBench();
+      renderTeamStyles();
+      renderTemplateList();
+    renderTacticalQuickSlots();
+      syncFieldCanvas();
+      redrawFieldAnnotations();
+    }
+
+    function makeDraggable(el, token, isPlayer=true, customOffset=null){
+      let drag = false;
+      let rafId = null;
+      let pendingPoint = null;
+      const applyPosition = ()=>{
+        rafId = null;
+        if(!pendingPoint) return;
+        const rect = field.getBoundingClientRect();
+        let x = ((pendingPoint.clientX-rect.left)/rect.width)*100;
+        let y = ((pendingPoint.clientY-rect.top)/rect.height)*100;
+        x = Math.max(2, Math.min(98, x));
+        y = Math.max(4, Math.min(96, y));
+        token.x = x; token.y = y;
+        const offsetX = customOffset ? customOffset.x : (isPlayer ? el.offsetWidth/2 : 18);
+        const offsetY = customOffset ? customOffset.y : (isPlayer ? el.offsetHeight/2 : 18);
+        el.style.left = `calc(${x}% - ${offsetX}px)`;
+        el.style.top = `calc(${y}% - ${offsetY}px)`;
+      };
+      const queueMove = (clientX, clientY)=>{
+        pendingPoint = {clientX, clientY};
+        if(!rafId) rafId = requestAnimationFrame(applyPosition);
+      };
+      const start = (e)=>{
+        if(fieldTool!=='select') return false;
+        drag = true;
+        if(!isPlayer) selectedObjectId = token.id;
+        el.style.cursor = 'grabbing';
+        el.classList.add(isPlayer ? 'token-dragging' : 'object-dragging');
+        if(e.cancelable) e.preventDefault();
+        return true;
+      };
+      const end = ()=>{
+        if(!drag) return;
+        drag = false;
+        el.style.cursor = 'grab';
+        el.classList.remove(isPlayer ? 'token-dragging' : 'object-dragging');
+        if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+        saveState();
+      };
+      el.addEventListener('pointerdown', e=>{
+        if(!start(e)) return;
+        if(el.setPointerCapture) el.setPointerCapture(e.pointerId);
+        queueMove(e.clientX, e.clientY);
+      }, {passive:false});
+      el.addEventListener('pointermove', e=>{ if(drag) queueMove(e.clientX, e.clientY); }, {passive:true});
+      el.addEventListener('pointerup', end);
+      el.addEventListener('pointercancel', end);
+      el.addEventListener('lostpointercapture', end);
+    }
+
+    function fieldCanvasPos(e){
+      const r = fieldCanvas.getBoundingClientRect();
+      return {x:e.clientX-r.left,y:e.clientY-r.top};
+    }
+
+    fieldCanvas.addEventListener('pointerdown',e=>{
+      if(!['pen','arrow','dasharrow','rect','polygon','eraser'].includes(fieldTool)) return;
+      if(fieldTool==='polygon'){
+        const pt = fieldCanvasPos(e);
+        if(polygonDraft.length >= 3 && Math.hypot(pt.x - polygonDraft[0].x, pt.y - polygonDraft[0].y) < 18){
+          finishPolygonDraft();
+          return;
+        }
+        polygonDraft.push(pt);
+        fieldPreviewPoint = pt;
+        redrawFieldAnnotations();
+        return;
+      }
+      fieldDrawing = true;
+      fieldPointerId = e.pointerId;
+      fieldStartPt = fieldCanvasPos(e);
+      fieldPenPath = [fieldStartPt];
+      if(fieldCanvas.setPointerCapture) fieldCanvas.setPointerCapture(e.pointerId);
+    });
+    fieldCanvas.addEventListener('pointermove',e=>{
+      const pt = fieldCanvasPos(e);
+      if(fieldTool==='polygon'){
+        fieldPreviewPoint = pt;
+        redrawFieldAnnotations();
+        return;
+      }
+      if(!fieldDrawing) return;
+      if(fieldTool==='pen' || fieldTool==='eraser'){
+        fieldPenPath.push(pt);
+        state.tacticalDrawings.push({type:fieldTool==='eraser'?'erase':'path',points:[...fieldPenPath],color:fieldDrawColor,width:fieldLineWidth});
+        fieldPenPath=[pt];
+        redrawFieldAnnotations();
+      }else{
+        redrawFieldAnnotations({type:fieldTool,x1:fieldStartPt.x,y1:fieldStartPt.y,x2:pt.x,y2:pt.y,color:fieldDrawColor,width:fieldLineWidth});
+      }
+    });
+    fieldCanvas.addEventListener('dblclick',e=>{
+      if(fieldTool==='polygon') finishPolygonDraft();
+    });
+    ['pointerup','pointerleave','pointercancel'].forEach(evt=>fieldCanvas.addEventListener(evt,e=>{
+      if(!fieldDrawing) return;
+      const pt = fieldCanvasPos(e);
+      if(fieldTool==='arrow' || fieldTool==='dasharrow' || fieldTool==='rect'){
+        state.tacticalDrawings.push({type:fieldTool,x1:fieldStartPt.x,y1:fieldStartPt.y,x2:pt.x,y2:pt.y,color:fieldDrawColor,width:fieldLineWidth});
+      }
+      fieldDrawing=false;
+      fieldPointerId = null;
+      saveState();
+      redrawFieldAnnotations();
+    }));
+
+    function finishPolygonDraft(){
+      if(polygonDraft.length < 3){
+        if(polygonDraft.length) alert('Cần ít nhất 3 điểm để tạo đa giác');
+        return;
+      }
+      state.tacticalDrawings.push({type:'polygon',points:polygonDraft.map(p=>({x:p.x,y:p.y})),color:fieldDrawColor,width:fieldLineWidth,fill:'rgba(255,255,255,.12)'});
+      polygonDraft = [];
+      fieldPreviewPoint = null;
+      saveState();
+      redrawFieldAnnotations();
+    }
+
+    function redrawFieldAnnotations(preview){
+      if(!fieldCanvas.width || !fieldCanvas.height) return;
+      fieldCtx.clearRect(0,0,fieldCanvas.width,fieldCanvas.height);
+      state.tacticalDrawings.forEach(shape=>drawFieldShape(shape));
+      if(preview) drawFieldShape(preview);
+      if(polygonDraft.length){
+        drawFieldShape({type:'polygon-preview',points:polygonDraft,previewPoint:fieldPreviewPoint,color:fieldDrawColor,width:fieldLineWidth,fill:'rgba(255,255,255,.08)'});
+      }
+    }
+    function drawFieldShape(s){
+      if(!s) return;
+      if(s.type==='erase'){
+        fieldCtx.save();
+        fieldCtx.globalCompositeOperation='destination-out';
+        drawFieldPath(s);
+        fieldCtx.restore();
+        return;
+      }
+      if(s.type==='path'){
+        drawFieldPath(s);
+        return;
+      }
+      fieldCtx.strokeStyle=s.color||'#fff';
+      fieldCtx.fillStyle=s.fill || s.color || '#fff';
+      fieldCtx.lineWidth=s.width||4;
+      fieldCtx.lineCap='round';
+      fieldCtx.lineJoin='round';
+      if(s.type==='rect') fieldCtx.strokeRect(s.x1,s.y1,s.x2-s.x1,s.y2-s.y1);
+      if(s.type==='arrow') drawFieldArrow(s.x1,s.y1,s.x2,s.y2,s.color,s.width||4,false);
+      if(s.type==='dasharrow') drawFieldArrow(s.x1,s.y1,s.x2,s.y2,s.color,s.width||4,true);
+      if(s.type==='polygon' || s.type==='polygon-preview') drawFieldPolygon(s);
+    }
+    function drawFieldPolygon(s){
+      const pts = [...(s.points||[])];
+      if(s.type==='polygon-preview' && s.previewPoint) pts.push(s.previewPoint);
+      if(pts.length < 2) return;
+      fieldCtx.save();
+      if(s.type==='polygon-preview') fieldCtx.setLineDash([10,8]);
+      fieldCtx.beginPath();
+      fieldCtx.moveTo(pts[0].x, pts[0].y);
+      for(let i=1;i<pts.length;i++) fieldCtx.lineTo(pts[i].x, pts[i].y);
+      if(s.type==='polygon') fieldCtx.closePath();
+      fieldCtx.fillStyle = s.fill || 'rgba(255,255,255,.12)';
+      if(pts.length >= 3) fieldCtx.fill();
+      fieldCtx.stroke();
+      fieldCtx.setLineDash([]);
+      pts.forEach(pt=>{ fieldCtx.beginPath(); fieldCtx.arc(pt.x, pt.y, 4, 0, Math.PI*2); fieldCtx.fillStyle = s.color || '#fff'; fieldCtx.fill(); });
+      fieldCtx.restore();
+    }
+    function drawFieldPath(s){
+      const pts=s.points||[];
+      if(pts.length<2) return;
+      fieldCtx.beginPath();
+      fieldCtx.moveTo(pts[0].x,pts[0].y);
+      for(let i=1;i<pts.length;i++) fieldCtx.lineTo(pts[i].x,pts[i].y);
+      fieldCtx.strokeStyle=s.color||'#fff';
+      fieldCtx.lineWidth=s.width||4;
+      fieldCtx.stroke();
+    }
+    function drawFieldArrow(x1,y1,x2,y2,color,width,dashed=false){
+      fieldCtx.strokeStyle=color;
+      fieldCtx.fillStyle=color;
+      fieldCtx.lineWidth=width;
+      fieldCtx.setLineDash(dashed ? [14,10] : []);
+      fieldCtx.beginPath();
+      fieldCtx.moveTo(x1,y1);
+      fieldCtx.lineTo(x2,y2);
+      fieldCtx.stroke();
+      fieldCtx.setLineDash([]);
+      const angle=Math.atan2(y2-y1,x2-x1), head=15+width;
+      fieldCtx.beginPath();
+      fieldCtx.moveTo(x2,y2);
+      fieldCtx.lineTo(x2-head*Math.cos(angle-Math.PI/7), y2-head*Math.sin(angle-Math.PI/7));
+      fieldCtx.lineTo(x2-head*Math.cos(angle+Math.PI/7), y2-head*Math.sin(angle+Math.PI/7));
+      fieldCtx.closePath();
+      fieldCtx.fill();
+    }
+
+    window.addEventListener('resize',syncFieldCanvas);
+
+    // Tactical drill animation / video
+    let tacticalAnimationPlaying = false;
+    let tacticalAnimationAbort = false;
+
+    function makeFrameSnapshot(label){
+      return {
+        id: uid(),
+        label: label || ('Bước ' + ((state.tacticalFrames || []).length + 1)),
+        createdAt: new Date().toISOString(),
+        duration: Number(state.frameDuration || 1.2),
+        snapshot: cloneTacticalState()
+      };
+    }
+    function renderFramesList(){
+      const wrap = document.getElementById('framesList');
+      if(!wrap) return;
+      const frames = state.tacticalFrames || [];
+      document.getElementById('frameDurationSlider').value = String(Number(state.frameDuration || 1.2));
+      document.getElementById('frameDurationValue').textContent = Number(state.frameDuration || 1.2).toFixed(1) + 's';
+      if(!frames.length){
+        wrap.innerHTML = '<div class="frame-card muted">Chưa có bước nào. Hãy sắp xếp sơ đồ rồi bấm “Ghi bước”.</div>';
+        return;
+      }
+      wrap.innerHTML = frames.map((frame, idx)=>`<div class="frame-card"><strong>${escapeHtml(frame.label || ('Bước ' + (idx+1)))}</strong><div class="muted" style="margin-top:6px">Cầu thủ: ${(frame.snapshot?.fieldTokens || []).length} • Con cờ: ${(frame.snapshot?.fieldPieces || []).length} • ${new Date(frame.createdAt).toLocaleTimeString('vi-VN')}</div><div class="actions" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr"><button class="btn small" onclick="applyTacticalFrame('${frame.id}')">Nạp</button><button class="btn small" onclick="renameTacticalFrame('${frame.id}')">Đổi tên</button><button class="btn small danger" onclick="deleteTacticalFrame('${frame.id}')">Xóa</button></div></div>`).join('');
+    }
+    window.applyTacticalFrame = function(id){
+      const frame = (state.tacticalFrames || []).find(f=>f.id===id);
+      if(!frame) return;
+      applyTacticalSnapshot(frame.snapshot || {});
+    };
+    window.renameTacticalFrame = function(id){
+      const frame = (state.tacticalFrames || []).find(f=>f.id===id);
+      if(!frame) return;
+      const name = prompt('Tên bước chiến thuật', frame.label || '');
+      if(name === null) return;
+      frame.label = name.trim() || frame.label || 'Bước';
+      saveState();
+      renderFramesList();
+    };
+    window.deleteTacticalFrame = function(id){
+      state.tacticalFrames = (state.tacticalFrames || []).filter(f=>f.id!==id);
+      saveState();
+      renderFramesList();
+    };
+
+    document.getElementById('recordFrameBtn').addEventListener('click', ()=>{
+      state.tacticalFrames = state.tacticalFrames || [];
+      state.tacticalFrames.push(makeFrameSnapshot());
+      saveState();
+      renderFramesList();
+    });
+    document.getElementById('loadLastFrameBtn').addEventListener('click', ()=>{
+      const frames = state.tacticalFrames || [];
+      if(!frames.length) return alert('Chưa có bước nào');
+      applyTacticalSnapshot(frames[frames.length - 1].snapshot || {});
+    });
+    document.getElementById('clearFramesBtn').addEventListener('click', ()=>{
+      if(!(state.tacticalFrames || []).length) return;
+      if(!confirm('Xóa toàn bộ các bước bài tập?')) return;
+      state.tacticalFrames = [];
+      saveState();
+      renderFramesList();
+    });
+    document.getElementById('frameDurationSlider').addEventListener('input', e=>{
+      state.frameDuration = Number(e.target.value || 1.2);
+      document.getElementById('frameDurationValue').textContent = state.frameDuration.toFixed(1) + 's';
+      saveState();
+    });
+    document.getElementById('stopAnimationBtn').addEventListener('click', ()=>{
+      tacticalAnimationAbort = true;
+      tacticalAnimationPlaying = false;
+    });
+
+    function mapByKey(arr, keyFn){
+      const m = new Map();
+      (arr || []).forEach(item => m.set(keyFn(item), item));
+      return m;
+    }
+    function mergeSnapshotStates(fromSnapshot, toSnapshot){
+      const result = structuredClone(toSnapshot || {});
+      const fromPlayers = mapByKey(fromSnapshot?.fieldTokens || [], x=>x.playerId || x.id);
+      result.fieldTokens = (toSnapshot?.fieldTokens || []).map(item => ({...(fromPlayers.get(item.playerId || item.id) || item), ...item}));
+      const fromPieces = mapByKey(fromSnapshot?.fieldPieces || [], x=>x.id);
+      result.fieldPieces = (toSnapshot?.fieldPieces || []).map(item => ({...(fromPieces.get(item.id) || item), ...item}));
+      const fromObjects = mapByKey(fromSnapshot?.tacticalObjects || [], x=>x.id);
+      result.tacticalObjects = (toSnapshot?.tacticalObjects || []).map(item => ({...(fromObjects.get(item.id) || item), ...item}));
+      return result;
+    }
+    function applySnapshotWithoutSave(snapshot){
+      if(!snapshot) return;
+      state.fieldTokens = JSON.parse(JSON.stringify(snapshot.fieldTokens || []));
+      state.fieldPieces = JSON.parse(JSON.stringify(snapshot.fieldPieces || []));
+      state.tacticalObjects = JSON.parse(JSON.stringify(snapshot.tacticalObjects || []));
+      state.tacticalDrawings = JSON.parse(JSON.stringify(snapshot.tacticalDrawings || []));
+      if(snapshot.teamStyles) state.teamStyles = JSON.parse(JSON.stringify(snapshot.teamStyles));
+      if(snapshot.pieceStyle) state.pieceStyle = snapshot.pieceStyle;
+      if(snapshot.pieceSize) state.pieceSize = Number(snapshot.pieceSize);
+      renderFieldTokens();
+      renderTeamStyles();
+      redrawFieldAnnotations();
+      syncPieceControls();
+    }
+    function animateFieldElement(selector, x, y, durationMs, offset){
+      const el = field.querySelector(selector);
+      if(!el) return;
+      el.style.transition = `left ${durationMs}ms ease, top ${durationMs}ms ease, transform .18s ease, box-shadow .18s ease`;
+      el.style.left = `calc(${x}% - ${offset.x}px)`;
+      el.style.top = `calc(${y}% - ${offset.y}px)`;
+    }
+    function animateSnapshotTransition(fromSnapshot, toSnapshot, durationMs){
+      const nextPieceSize = Number(toSnapshot.pieceSize || state.pieceSize || 56);
+      const nextPieceOffset = nextPieceSize / 2;
+      state.pieceStyle = toSnapshot.pieceStyle || state.pieceStyle;
+      state.pieceSize = nextPieceSize;
+      syncPieceControls();
+      renderFieldTokens();
+      redrawFieldAnnotations();
+      requestAnimationFrame(()=>{
+        (toSnapshot.fieldTokens || []).forEach(token=>{
+          animateFieldElement(`.player-token[data-id="${token.id}"]`, token.x, token.y, durationMs, {x:31,y:31});
+        });
+        (toSnapshot.fieldPieces || []).forEach(piece=>{
+          animateFieldElement(`.player-token[data-id="${piece.id}"]`, piece.x, piece.y, durationMs, {x:nextPieceOffset,y:nextPieceOffset});
+        });
+        (toSnapshot.tacticalObjects || []).forEach(obj=>{
+          const isGoal = obj.type === 'goal';
+          animateFieldElement(`.field-object[data-id="${obj.id}"]`, obj.x, obj.y, durationMs, isGoal ? {x:34,y:18} : {x:18,y:18});
+        });
+      });
+      state.fieldTokens = JSON.parse(JSON.stringify(toSnapshot.fieldTokens || []));
+      state.fieldPieces = JSON.parse(JSON.stringify(toSnapshot.fieldPieces || []));
+      state.tacticalObjects = JSON.parse(JSON.stringify(toSnapshot.tacticalObjects || []));
+      state.tacticalDrawings = JSON.parse(JSON.stringify(toSnapshot.tacticalDrawings || []));
+      if(toSnapshot.teamStyles) state.teamStyles = JSON.parse(JSON.stringify(toSnapshot.teamStyles));
+    }
+    async function playTacticalAnimation(opts = {}){
+      const frames = state.tacticalFrames || [];
+      if(frames.length < 2) return alert('Cần ít nhất 2 bước để chạy bài tập.');
+      if(tacticalAnimationPlaying) return;
+      tacticalAnimationPlaying = true;
+      tacticalAnimationAbort = false;
+      const shouldSaveEnd = opts.saveEnd !== false;
+      applySnapshotWithoutSave(frames[0].snapshot || {});
+      await new Promise(r=>setTimeout(r, 120));
+      for(let i=1;i<frames.length;i++){
+        if(tacticalAnimationAbort) break;
+        const nextFrame = frames[i].snapshot || {};
+        animateSnapshotTransition(frames[i-1].snapshot || {}, nextFrame, Number(state.frameDuration || 1.2) * 1000);
+        await new Promise(r=>setTimeout(r, Number(state.frameDuration || 1.2) * 1000 + 40));
+      }
+      if(!tacticalAnimationAbort){
+        applySnapshotWithoutSave(frames[frames.length - 1].snapshot || {});
+        if(shouldSaveEnd) saveState();
+      }
+      tacticalAnimationPlaying = false;
+      tacticalAnimationAbort = false;
+    }
+    document.getElementById('playAnimationBtn').addEventListener('click', ()=>playTacticalAnimation());
+
+    function drawExportPitch(ctx, w, h){
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = '#246f3c';
+      ctx.fillRect(0,0,w,h);
+      for(let i=0;i<12;i++){
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,.045)' : 'rgba(0,0,0,.035)';
+        ctx.fillRect((w/12)*i, 0, w/12, h);
+      }
+      const pad = 48;
+      ctx.strokeStyle = 'rgba(255,255,255,.88)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(pad,pad,w-pad*2,h-pad*2);
+      ctx.beginPath(); ctx.moveTo(w/2,pad); ctx.lineTo(w/2,h-pad); ctx.stroke();
+      ctx.beginPath(); ctx.arc(w/2,h/2,88,0,Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(w/2,h/2,6,0,Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      ctx.strokeRect(pad,h/2-150,150,300);
+      ctx.strokeRect(w-pad-150,h/2-150,150,300);
+      ctx.strokeRect(pad,h/2-72,62,144);
+      ctx.strokeRect(w-pad-62,h/2-72,62,144);
+      ctx.strokeRect(14,h/2-44,34,88);
+      ctx.strokeRect(w-48,h/2-44,34,88);
+    }
+    function exportPoint(item, w, h){ return {x:(item.x/100)*w, y:(item.y/100)*h}; }
+    function drawExportArrow(ctx,x1,y1,x2,y2,color,width,dashed=false){
+      ctx.save();
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+      ctx.setLineDash(dashed ? [18,12] : []);
+      ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      ctx.setLineDash([]);
+      const angle = Math.atan2(y2-y1,x2-x1), head = 18 + width;
+      ctx.beginPath();
+      ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-head*Math.cos(angle-Math.PI/7), y2-head*Math.sin(angle-Math.PI/7));
+      ctx.lineTo(x2-head*Math.cos(angle+Math.PI/7), y2-head*Math.sin(angle+Math.PI/7));
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+    function drawExportShape(ctx, shape, w, h){
+      if(!shape) return;
+      const sx = v => (v / (fieldCanvas.width || field.clientWidth || 1)) * w;
+      const sy = v => (v / (fieldCanvas.height || field.clientHeight || 1)) * h;
+      ctx.save();
+      ctx.strokeStyle = shape.color || '#fff';
+      ctx.fillStyle = shape.color || '#fff';
+      ctx.lineWidth = (shape.width || 4) * (w / (fieldCanvas.width || field.clientWidth || w));
+      if(shape.type === 'path' && (shape.points || []).length > 1){
+        ctx.beginPath();
+        ctx.moveTo(sx(shape.points[0].x), sy(shape.points[0].y));
+        for(let i=1;i<shape.points.length;i++) ctx.lineTo(sx(shape.points[i].x), sy(shape.points[i].y));
+        ctx.stroke();
+      }else if(shape.type === 'rect'){
+        ctx.strokeRect(sx(shape.x1), sy(shape.y1), sx(shape.x2)-sx(shape.x1), sy(shape.y2)-sy(shape.y1));
+      }else if(shape.type === 'arrow'){
+        drawExportArrow(ctx, sx(shape.x1), sy(shape.y1), sx(shape.x2), sy(shape.y2), shape.color || '#fff', ctx.lineWidth, false);
+      }else if(shape.type === 'dasharrow'){
+        drawExportArrow(ctx, sx(shape.x1), sy(shape.y1), sx(shape.x2), sy(shape.y2), shape.color || '#fff', ctx.lineWidth, true);
+      }else if(shape.type === 'polygon' && (shape.points || []).length > 2){
+        ctx.beginPath();
+        ctx.moveTo(sx(shape.points[0].x), sy(shape.points[0].y));
+        for(let i=1;i<shape.points.length;i++) ctx.lineTo(sx(shape.points[i].x), sy(shape.points[i].y));
+        ctx.closePath();
+        ctx.globalAlpha = 0.2; ctx.fill(); ctx.globalAlpha = 1; ctx.stroke();
+      }
+      ctx.restore();
+    }
+    function drawExportSnapshot(ctx, snapshot, caption=''){
+      const w = ctx.canvas.width, h = ctx.canvas.height;
+      drawExportPitch(ctx, w, h);
+      (snapshot.tacticalDrawings || []).forEach(shape => drawExportShape(ctx, shape, w, h));
+      (snapshot.tacticalObjects || []).forEach(obj=>{
+        const p = exportPoint(obj, w, h);
+        ctx.save();
+        if(obj.type === 'ball'){
+          ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 14, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+        }else if(obj.type === 'cone'){
+          ctx.fillStyle = '#ff9d43';
+          ctx.beginPath(); ctx.moveTo(p.x, p.y-18); ctx.lineTo(p.x+16, p.y+18); ctx.lineTo(p.x-16, p.y+18); ctx.closePath(); ctx.fill();
+        }else if(obj.type === 'goal'){
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.strokeRect(p.x-26,p.y-16,52,32);
+        }else if(obj.type === 'pole'){
+          ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(p.x,p.y-22); ctx.lineTo(p.x,p.y+22); ctx.stroke();
+        }else if(obj.type === 'mannequin'){
+          ctx.fillStyle = '#ffb14a'; ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.roundRect(p.x-12,p.y-24,24,42,10); ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.arc(p.x,p.y-30,10,0,Math.PI*2); ctx.fill(); ctx.stroke();
+        }else if(obj.type === 'ladder'){
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.strokeRect(p.x-34,p.y-10,68,20);
+          for(let i=-20;i<=20;i+=14){ ctx.beginPath(); ctx.moveTo(p.x+i,p.y-10); ctx.lineTo(p.x+i,p.y+10); ctx.stroke(); }
+        }else if(obj.type === 'hurdle'){
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(p.x-18,p.y+10); ctx.lineTo(p.x-18,p.y-8); ctx.lineTo(p.x+18,p.y-8); ctx.lineTo(p.x+18,p.y+10); ctx.stroke();
+        }else if(obj.type === 'disc'){
+          ctx.fillStyle = '#35d39b'; ctx.beginPath(); ctx.ellipse(p.x,p.y,14,6,0,0,Math.PI*2); ctx.fill();
+        }else if(obj.type === 'flag'){
+          ctx.strokeStyle = '#ffe178'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(p.x,p.y+18); ctx.lineTo(p.x,p.y-18); ctx.stroke();
+          ctx.fillStyle = '#ff6177'; ctx.beginPath(); ctx.moveTo(p.x,p.y-18); ctx.lineTo(p.x+20,p.y-12); ctx.lineTo(p.x,p.y-6); ctx.closePath(); ctx.fill();
+        }
+        ctx.restore();
+      });
+      (snapshot.fieldTokens || []).forEach(token=>{
+        const p = exportPoint(token, w, h);
+        const colors = getTeamColors(token.team);
+        ctx.save();
+        const grad = ctx.createLinearGradient(p.x-30, p.y-30, p.x+30, p.y+30);
+        grad.addColorStop(0, colors[0]); grad.addColorStop(1, colors[1]);
+        ctx.fillStyle = grad;
+        ctx.strokeStyle = 'rgba(255,255,255,.55)';
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.roundRect(p.x-30,p.y-30,60,60,18); ctx.fill(); ctx.stroke();
+        const player = state.players.find(pl=>pl.id===token.playerId);
+        ctx.fillStyle = '#fff'; ctx.font='700 22px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(player?.number || '', p.x, p.y);
+        ctx.restore();
+      });
+      (snapshot.fieldPieces || []).forEach(piece=>{
+        const p = exportPoint(piece, w, h);
+        const colors = getTeamColors(piece.team);
+        const pieceSize = Number(snapshot.pieceSize || state.pieceSize || 56);
+        const r = Math.max(18, pieceSize * 0.45);
+        ctx.save();
+        const grad = ctx.createLinearGradient(p.x-r, p.y-r, p.x+r, p.y+r);
+        grad.addColorStop(0, colors[0]); grad.addColorStop(1, colors[1]);
+        ctx.fillStyle = grad; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 4;
+        if((snapshot.pieceStyle || state.pieceStyle) === 'circle'){
+          ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill(); ctx.stroke();
+        }else{
+          ctx.beginPath(); ctx.roundRect(p.x-r,p.y-r,r*2,r*2,18); ctx.fill(); ctx.stroke();
+        }
+        ctx.fillStyle = '#fff'; ctx.font=`700 ${Math.max(18, r*.8)}px Arial`; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(piece.label || piece.team, p.x, p.y);
+        ctx.restore();
+      });
+      ctx.save();
+      ctx.fillStyle = 'rgba(7,17,28,.72)';
+      ctx.fillRect(0, h-58, w, 58);
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 28px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText(caption || 'Bài tập chiến thuật', 28, h-22);
+      ctx.restore();
+    }
+    async function exportDrillVideo(){
+      const frames = state.tacticalFrames || [];
+      if(frames.length < 2) return alert('Cần ít nhất 2 bước để xuất video.');
+      const canvas = document.getElementById('tacticalExportCanvas');
+      const ctx = canvas.getContext('2d');
+      const stream = canvas.captureStream(30);
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+      const recorder = new MediaRecorder(stream, {mimeType});
+      const chunks = [];
+      recorder.ondataavailable = e => { if(e.data && e.data.size) chunks.push(e.data); };
+      recorder.start();
+      const framesPerTransition = Math.max(6, Math.round((Number(state.frameDuration || 1.2) * 30)));
+      const lerp = (a,b,t)=>a+(b-a)*t;
+      const blendSnapshots = (a,b,t)=>{
+        const out = structuredClone(b || {});
+        const amap = mapByKey(a?.fieldTokens || [], x=>x.playerId || x.id);
+        out.fieldTokens = (b?.fieldTokens || []).map(item=>{
+          const from = amap.get(item.playerId || item.id) || item;
+          return {...item, x: lerp(Number(from.x||item.x), Number(item.x), t), y: lerp(Number(from.y||item.y), Number(item.y), t)};
+        });
+        const pmap = mapByKey(a?.fieldPieces || [], x=>x.id);
+        out.fieldPieces = (b?.fieldPieces || []).map(item=>{
+          const from = pmap.get(item.id) || item;
+          return {...item, x: lerp(Number(from.x||item.x), Number(item.x), t), y: lerp(Number(from.y||item.y), Number(item.y), t)};
+        });
+        const omap = mapByKey(a?.tacticalObjects || [], x=>x.id);
+        out.tacticalObjects = (b?.tacticalObjects || []).map(item=>{
+          const from = omap.get(item.id) || item;
+          return {...item, x: lerp(Number(from.x||item.x), Number(item.x), t), y: lerp(Number(from.y||item.y), Number(item.y), t)};
+        });
+        out.tacticalDrawings = b?.tacticalDrawings || [];
+        out.pieceStyle = b?.pieceStyle || state.pieceStyle;
+        out.pieceSize = b?.pieceSize || state.pieceSize;
+        return out;
+      };
+      for(let i=0;i<frames.length-1;i++){
+        const current = frames[i].snapshot || {};
+        const next = frames[i+1].snapshot || {};
+        for(let f=0;f<framesPerTransition;f++){
+          const t = f / framesPerTransition;
+          const blended = blendSnapshots(current, next, t);
+          drawExportSnapshot(ctx, blended, `${frames[i].label || 'Bước ' + (i+1)} → ${frames[i+1].label || 'Bước ' + (i+2)}`);
+          await new Promise(r=>setTimeout(r, 1000/30));
+        }
+      }
+      drawExportSnapshot(ctx, frames[frames.length-1].snapshot || {}, frames[frames.length-1].label || 'Bước cuối');
+      await new Promise(r=>setTimeout(r, 300));
+      const blobPromise = new Promise(resolve => recorder.onstop = ()=>resolve(new Blob(chunks, {type:mimeType})));
+      recorder.stop();
+      const blob = await blobPromise;
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'tactical-drill.webm';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    document.getElementById('exportDrillVideoBtn').addEventListener('click', exportDrillVideo);
+
+    // Video analysis
+    const video = document.getElementById('video');
+    const videoGhost = document.getElementById('videoGhost');
+    const videoWrap = document.getElementById('videoWrap');
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    const timelineRange = document.getElementById('timelineRange');
+    const markerLayer = document.getElementById('markerLayer');
+    let tool='pen', drawColor='#ffffff', drawing=false, startPt=null, penPath=[];
+    const colors = [
+      {name:'White',value:'#ffffff'},{name:'Blue',value:'#5aa8ff'},{name:'Green',value:'#35d39b'},{name:'Orange',value:'#ffb14a'},{name:'Red',value:'#ff6177'},{name:'Yellow',value:'#f8e45c'}
+    ];
+
+    function buildPalette(){
+      const wrap = document.getElementById('colorPalette');
+      wrap.innerHTML = colors.map((c,i)=>`<button class="color-dot ${i===0?'active':''}" data-color="${c.value}" data-name="${c.name}" style="background:${c.value}"></button>`).join('');
+      wrap.querySelectorAll('.color-dot').forEach(dot=>dot.addEventListener('click',()=>{
+        document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('active'));
+        dot.classList.add('active'); drawColor = dot.dataset.color; document.getElementById('activeColorLabel').textContent = dot.dataset.name;
+      }));
+    }
+    buildPalette();
+    document.querySelectorAll('.tool-btn').forEach((b,i)=>{
+      if(i===0) b.classList.add('secondary');
+      b.addEventListener('click',()=>{
+        document.querySelectorAll('.tool-btn').forEach(x=>x.classList.remove('secondary'));
+        b.classList.add('secondary'); tool = b.dataset.tool; document.getElementById('activeToolLabel').textContent = tool[0].toUpperCase()+tool.slice(1);
+      });
+    });
+
+    function syncCanvasSize(){
+      const rect = video.getBoundingClientRect();
+      if(!rect.width || !rect.height) return;
+      canvas.width = rect.width; canvas.height = rect.height;
+      redrawAnnotations();
+    }
+    window.addEventListener('resize',syncCanvasSize);
+    video.addEventListener('loadedmetadata',()=>{
+      document.getElementById('durationLabel').textContent = formatTime(video.duration);
+      syncCanvasSize(); updateMarkers(); drawMiniMap();
+    });
+    video.addEventListener('timeupdate',()=>{
+      if(video.duration) timelineRange.value = (video.currentTime/video.duration)*100;
+      document.getElementById('timeLabel').textContent = formatTime(video.currentTime);
+      drawMiniMap();
+      redrawAnnotations();
+    });
+    timelineRange.addEventListener('input',()=>{
+      if(video.duration) video.currentTime = (timelineRange.value/100)*video.duration;
+    });
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    function updatePlayPauseBtn(){
+      playPauseBtn.textContent = video.paused ? '▶ Play' : '⏸ Pause';
+    }
+    function updateVideoModeUI(){
+      const mode = state.videoViewMode === 'pseudo3d' ? '3D giả lập' : '2D';
+      document.getElementById('videoModeLabel').textContent = mode;
+      document.getElementById('pseudo3dBtn').textContent = state.videoViewMode === 'pseudo3d' ? '3D giả lập: Bật' : '3D giả lập: Tắt';
+      videoWrap.classList.toggle('pseudo3d', state.videoViewMode === 'pseudo3d');
+    }
+    playPauseBtn.addEventListener('click', async ()=>{
+      if(!video.src) return alert('Hãy tải video trước');
+      try{
+        if(video.paused) await video.play();
+        else video.pause();
+      }catch(err){
+        console.error(err);
+      }
+      updatePlayPauseBtn();
+    });
+    document.getElementById('fullscreenBtn').addEventListener('click', async ()=>{
+      if(!video.src) return alert('Hãy tải video trước');
+      try{
+        if(document.fullscreenElement===videoWrap) await document.exitFullscreen();
+        else if(videoWrap.requestFullscreen) await videoWrap.requestFullscreen();
+      }catch(err){ console.error(err); }
+    });
+    document.getElementById('pseudo3dBtn').addEventListener('click', ()=>{
+      state.videoViewMode = state.videoViewMode === 'pseudo3d' ? '2d' : 'pseudo3d';
+      saveState(); updateVideoModeUI();
+    });
+    document.getElementById('videoInput').addEventListener('change',e=>{
+      const file = e.target.files?.[0]; if(!file) return;
+      const url = URL.createObjectURL(file);
+      video.src = url; videoGhost.src = url; video.load(); videoGhost.load();
+      tempShapes=[]; redrawAnnotations();
+      requestAnimationFrame(()=>{ updatePlayPauseBtn(); updateVideoModeUI(); });
+    });
+    video.addEventListener('play', ()=>{ updatePlayPauseBtn(); if(videoGhost.src) videoGhost.play().catch(()=>{}); });
+    video.addEventListener('pause', ()=>{ updatePlayPauseBtn(); videoGhost.pause(); });
+    video.addEventListener('ended', ()=>{ updatePlayPauseBtn(); videoGhost.pause(); });
+    video.addEventListener('seeking', ()=>{ try{ videoGhost.currentTime = video.currentTime; }catch(e){} });
+    video.addEventListener('timeupdate', ()=>{ try{ if(Math.abs(videoGhost.currentTime - video.currentTime) > 0.08) videoGhost.currentTime = video.currentTime; }catch(e){} });
+    video.addEventListener('ratechange', ()=>{ videoGhost.playbackRate = video.playbackRate || 1; });
+    document.addEventListener('fullscreenchange', ()=>{
+      const btn = document.getElementById('fullscreenBtn');
+      btn.textContent = document.fullscreenElement===videoWrap ? 'Thoát full' : 'Toàn màn hình';
+      setTimeout(syncCanvasSize, 60);
+    });
+    document.getElementById('clearDrawingBtn').onclick = ()=>{ tempShapes=[]; redrawAnnotations(); };
+
+    let tempShapes = [];
+    function canvasPos(e){ const r = canvas.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+    canvas.addEventListener('pointerdown',e=>{
+      if(!video.src) return;
+      const pt = canvasPos(e);
+      if(calibrationMode){
+        const vpt = canvasToVideoPoint(pt.x, pt.y);
+        state.aiCalibration.push({x:vpt.x,y:vpt.y});
+        saveState();
+        updateAiMetrics();
+        if(state.aiCalibration.length>=4){ calibrationMode = false; updateAiStatus('Đã lưu 4 góc sân. Giờ có thể bấm AI detect timeline.'); }
+        else updateAiStatus(`Đã lưu góc ${state.aiCalibration.length}/4. Tiếp tục click góc tiếp theo.`);
+        redrawAnnotations(); drawMiniMap();
+        return;
+      }
+      drawing = true; startPt = pt; penPath=[startPt];
+      if(tool==='text'){
+        const txt = document.getElementById('annotationText').value.trim() || 'Text';
+        tempShapes.push({type:'text',x:startPt.x,y:startPt.y,color:drawColor,text:txt,size:Number(document.getElementById('lineWidthInput').value||4)*6});
+        drawing=false; redrawAnnotations();
+      }
+    });
+    canvas.addEventListener('pointermove',e=>{
+      if(!drawing) return;
+      const pt = canvasPos(e);
+      if(tool==='pen' || tool==='eraser'){
+        penPath.push(pt);
+        tempShapes.push({type:tool==='eraser'?'erase':'path',points:[...penPath],color:drawColor,width:Number(document.getElementById('lineWidthInput').value||4)});
+        penPath=[pt];
+      }
+      redrawAnnotations(pt);
+    });
+    ['pointerup','pointerleave','pointercancel'].forEach(evt=>canvas.addEventListener(evt,e=>{
+      if(!drawing) return;
+      const end = canvasPos(e);
+      const width = Number(document.getElementById('lineWidthInput').value||4);
+      if(tool==='arrow' || tool==='rect' || tool==='circle') tempShapes.push({type:tool,x1:startPt.x,y1:startPt.y,x2:end.x,y2:end.y,color:drawColor,width});
+      drawing=false; redrawAnnotations();
+    }));
+
+    function redrawAnnotations(preview){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      drawAiOverlay();
+      tempShapes.forEach(shape=>drawShape(shape));
+      if(drawing && preview && ['arrow','rect','circle'].includes(tool)){
+        drawShape({type:tool,x1:startPt.x,y1:startPt.y,x2:preview.x,y2:preview.y,color:drawColor,width:Number(document.getElementById('lineWidthInput').value||4)});
+      }
+    }
+    function drawAiOverlay(){
+      if(!canvas.width || !canvas.height) return;
+      // calibration polygon
+      const calib = state.aiCalibration || [];
+      if(calib.length){
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,225,120,.95)'; ctx.fillStyle = 'rgba(255,225,120,.16)'; ctx.lineWidth = 2.5; ctx.setLineDash([8,7]);
+        ctx.beginPath();
+        calib.forEach((p,i)=>{ const cp = videoToCanvasPoint(p.x,p.y); if(i===0) ctx.moveTo(cp.x,cp.y); else ctx.lineTo(cp.x,cp.y); });
+        if(calib.length===4) ctx.closePath();
+        ctx.fill(); ctx.stroke(); ctx.setLineDash([]);
+        calib.forEach((p,i)=>{ const cp = videoToCanvasPoint(p.x,p.y); ctx.beginPath(); ctx.fillStyle='#ffe178'; ctx.arc(cp.x,cp.y,5,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#07111c'; ctx.font='700 11px Inter, Arial'; ctx.fillText(String(i+1), cp.x+8, cp.y-8); });
+        ctx.restore();
+      }
+      const frame = getClosestAiFrame(video.currentTime || 0);
+      if(!frame) return;
+      const tracksMap = new Map((state.aiTracks||[]).map(t=>[t.trackId,t]));
+      for(const tr of (state.aiTracks||[])) {
+        const pts = tr.points.filter(pt => Math.abs((pt.time||0) - (video.currentTime||0)) <= 6).map(pt=>videoToCanvasPoint(pt.x, pt.y));
+        if(pts.length < 2) continue;
+        ctx.save(); ctx.setLineDash([10,8]); ctx.lineWidth = 2.5; ctx.strokeStyle = tr.team==='A' ? 'rgba(90,168,255,.95)' : tr.team==='B' ? 'rgba(255,97,119,.95)' : 'rgba(255,255,255,.95)';
+        ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y); for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y); ctx.stroke(); ctx.restore();
+      }
+      for(const e of (frame.entities||[])){
+        const tl = videoToCanvasPoint(e.x - e.w/2, e.y - e.h);
+        const br = videoToCanvasPoint(e.x + e.w/2, e.y);
+        if(e.type === 'ball'){
+          ctx.save(); ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+          const p = videoToCanvasPoint(e.x,e.y); ctx.beginPath(); ctx.arc(p.x,p.y,6,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore();
+        } else {
+          ctx.save();
+          ctx.strokeStyle = e.team==='A' ? '#5aa8ff' : e.team==='B' ? '#ff6177' : '#ffffff'; ctx.lineWidth = 2.2;
+          ctx.strokeRect(tl.x, tl.y, br.x - tl.x, br.y - tl.y);
+          ctx.fillStyle = ctx.strokeStyle;
+          ctx.fillRect(tl.x, tl.y-18, 42, 16);
+          ctx.fillStyle = '#07111c'; ctx.font='700 11px Inter, Arial'; ctx.fillText((e.trackId||'P').replace('P','P'), tl.x+4, tl.y-6);
+          ctx.restore();
+        }
+      }
+      const nearPasses = (state.aiPasses||[]).filter(p=>Math.abs((p.time||0)-(video.currentTime||0)) < 3).slice(-2);
+      for(const p of nearPasses){
+        const fromTrack = tracksMap.get(p.from); const toTrack = tracksMap.get(p.to);
+        let fp = p.fromPos, tp = p.toPos;
+        if(fromTrack){ const z = fromTrack.points.reduce((a,b)=>Math.abs((a.time||0)-(video.currentTime||0)) < Math.abs((b.time||0)-(video.currentTime||0)) ? a : b); fp = projectVideoPointToMiniMap(z.x,z.y); fp._video = {x:z.x,y:z.y}; }
+        if(toTrack){ const z = toTrack.points.reduce((a,b)=>Math.abs((a.time||0)-(video.currentTime||0)) < Math.abs((b.time||0)-(video.currentTime||0)) ? a : b); tp = projectVideoPointToMiniMap(z.x,z.y); tp._video = {x:z.x,y:z.y}; }
+        const a = fp._video ? videoToCanvasPoint(fp._video.x, fp._video.y) : null; const b = tp._video ? videoToCanvasPoint(tp._video.x, tp._video.y) : null;
+        if(a && b) drawArrow(a.x,a.y,b.x,b.y,'#ffe178',4);
+      }
+    }
+    function drawShape(s){
+      if(!s) return;
+      if(s.type==='erase'){
+        ctx.save(); ctx.globalCompositeOperation='destination-out'; drawPathLike(s,true); ctx.restore(); return;
+      }
+      if(s.type==='path'){ drawPathLike(s); return; }
+      ctx.strokeStyle=s.color||'#fff'; ctx.fillStyle=s.color||'#fff'; ctx.lineWidth=s.width||4; ctx.lineCap='round'; ctx.lineJoin='round';
+      if(s.type==='rect'){ ctx.strokeRect(s.x1,s.y1,s.x2-s.x1,s.y2-s.y1); }
+      if(s.type==='circle'){
+        const cx=(s.x1+s.x2)/2, cy=(s.y1+s.y2)/2, rx=Math.abs(s.x2-s.x1)/2, ry=Math.abs(s.y2-s.y1)/2;
+        ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.stroke();
+      }
+      if(s.type==='arrow'){
+        drawArrow(s.x1,s.y1,s.x2,s.y2,s.color,s.width||4);
+      }
+      if(s.type==='text'){
+        ctx.font = `700 ${Math.max(16,s.size||24)}px Inter, Arial`;
+        ctx.fillText(s.text||'Text',s.x,s.y);
+      }
+    }
+    function drawPathLike(s,erase=false){
+      const pts=s.points||[]; if(pts.length<2) return;
+      ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+      for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+      ctx.strokeStyle=s.color||'#fff'; ctx.lineWidth=s.width||6; ctx.stroke();
+    }
+    function drawArrow(x1,y1,x2,y2,color,width){
+      ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=width; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+      const angle=Math.atan2(y2-y1,x2-x1), head=16+width;
+      ctx.beginPath(); ctx.moveTo(x2,y2);
+      ctx.lineTo(x2-head*Math.cos(angle-Math.PI/7), y2-head*Math.sin(angle-Math.PI/7));
+      ctx.lineTo(x2-head*Math.cos(angle+Math.PI/7), y2-head*Math.sin(angle+Math.PI/7));
+      ctx.closePath(); ctx.fill();
+    }
+
+
+    // AI detect + minimap
+    const miniMapCanvas = document.getElementById('miniMapCanvas');
+    const miniCtx = miniMapCanvas.getContext('2d');
+    const aiStatusBox = document.getElementById('aiStatusBox');
+    let calibrationMode = false;
+    let suppressCanvasDraw = false;
+    let aiBusy = false;
+    let aiNavIndex = -1;
+    const offCanvas = document.createElement('canvas');
+    const offCtx = offCanvas.getContext('2d', {willReadFrequently:true});
+
+    function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
+    function dist(a,b){ return Math.hypot((a.x||0)-(b.x||0),(a.y||0)-(b.y||0)); }
+    function videoToCanvasPoint(x,y){
+      if(!video.videoWidth || !video.videoHeight || !canvas.width || !canvas.height) return {x,y};
+      return {x:(x/video.videoWidth)*canvas.width, y:(y/video.videoHeight)*canvas.height};
+    }
+    function canvasToVideoPoint(x,y){
+      if(!video.videoWidth || !video.videoHeight || !canvas.width || !canvas.height) return {x,y};
+      return {x:(x/canvas.width)*video.videoWidth, y:(y/canvas.height)*video.videoHeight};
+    }
+    function updateAiStatus(msg){ aiStatusBox.textContent = msg; }
+
+    document.getElementById('startCalibrationBtn').addEventListener('click', ()=>{
+      if(!video.src) return alert('Hãy tải video trước');
+      calibrationMode = true;
+      state.aiCalibration = [];
+      saveState();
+      updateAiStatus('Đang hiệu chỉnh sân: click lần lượt góc trên trái → trên phải → dưới phải → dưới trái trên khung video.');
+      updateAiMetrics();
+      redrawAnnotations();
+    });
+    document.getElementById('clearAiBtn').addEventListener('click', ()=>{
+      state.aiCalibration = [];
+      state.aiDetections = [];
+      state.aiTracks = [];
+      state.aiPasses = [];
+      state.aiLastRun = '';
+      aiNavIndex = -1;
+      saveState();
+      updateAiStatus('Đã xóa dữ liệu AI.');
+      updateAiMetrics();
+      renderPassList();
+      redrawAnnotations();
+      drawMiniMap();
+    });
+    document.getElementById('jumpPrevAiBtn').addEventListener('click', ()=>jumpAiMoment(-1));
+    document.getElementById('jumpNextAiBtn').addEventListener('click', ()=>jumpAiMoment(1));
+    document.getElementById('simulatePassBtn').addEventListener('click', ()=>{
+      inferPasses(true);
+      saveState();
+      updateAiMetrics();
+      renderPassList();
+      drawMiniMap();
+      redrawAnnotations();
+    });
+    document.getElementById('runAiDetectBtn').addEventListener('click', runAiDetectionTimeline);
+
+    async function runAiDetectionTimeline(){
+      if(aiBusy) return;
+      if(!video.src || !video.duration) return alert('Hãy tải video trước');
+      if((state.aiCalibration||[]).length !== 4) return alert('Cần hiệu chỉnh đủ 4 góc sân trước');
+      aiBusy = true;
+      const btn = document.getElementById('runAiDetectBtn');
+      const prevLabel = btn.textContent;
+      btn.textContent = 'Đang quét...';
+      const restoreTime = video.currentTime || 0;
+      const step = Math.max(0.2, Number(document.getElementById('aiSampleStep').value || state.aiSettings?.sampleStep || 0.6));
+      const maxFrames = Math.max(20, Number(document.getElementById('aiMaxFrames').value || state.aiSettings?.maxFrames || 180));
+      state.aiSettings = {sampleStep:step, maxFrames};
+      const times = [];
+      for(let t=0; t<video.duration && times.length<maxFrames; t+=step) times.push(Number(t.toFixed(2)));
+      if(!times.includes(Number(video.duration.toFixed(2))) && times.length<maxFrames) times.push(Number(video.duration.toFixed(2)));
+      state.aiDetections = [];
+      state.aiTracks = [];
+      state.aiPasses = [];
+      let prevDet = [];
+      let trackCounter = 1;
+      updateAiStatus('Bắt đầu quét ' + times.length + ' frame mẫu...');
+      try{
+        for(let i=0;i<times.length;i++){
+          const t = times[i];
+          updateAiStatus(`Đang quét frame ${i+1}/${times.length} tại ${formatTime(t)}...`);
+          await seekVideo(t);
+          const dets = detectFrameEntities();
+          const assigned = assignTracks(prevDet, dets, ()=>trackCounter++);
+          state.aiDetections.push({time:t, entities:assigned});
+          prevDet = assigned.map(d=>({...d}));
+        }
+        buildTrackStore();
+        inferPasses(false);
+        state.aiLastRun = new Date().toLocaleString('vi-VN');
+        saveState();
+        updateAiStatus('Hoàn tất AI detect beta. Có thể xem minimap, replay tình huống và đường chuyền giả lập.');
+        updateAiMetrics();
+        renderPassList();
+        drawMiniMap();
+        redrawAnnotations();
+      }catch(err){
+        console.error(err);
+        updateAiStatus('AI detect lỗi: ' + (err?.message || err));
+      }finally{
+        await seekVideo(restoreTime);
+        btn.textContent = prevLabel;
+        aiBusy = false;
+      }
+    }
+
+    function seekVideo(time){
+      return new Promise((resolve,reject)=>{
+        const onSeek = ()=>{ video.removeEventListener('seeked', onSeek); resolve(); };
+        video.addEventListener('seeked', onSeek, {once:true});
+        try{ video.currentTime = clamp(time, 0, Math.max(0, (video.duration||0)-0.05)); }
+        catch(err){ video.removeEventListener('seeked', onSeek); reject(err); }
+      });
+    }
+
+    function detectFrameEntities(){
+      const vw = video.videoWidth || 0, vh = video.videoHeight || 0;
+      if(!vw || !vh) return [];
+      const targetW = 320;
+      const targetH = Math.round((vh/vw) * targetW);
+      offCanvas.width = targetW; offCanvas.height = targetH;
+      offCtx.drawImage(video, 0, 0, targetW, targetH);
+      const img = offCtx.getImageData(0,0,targetW,targetH);
+      const data = img.data;
+      const mask = new Uint8Array(targetW*targetH);
+      for(let i=0, p=0; i<data.length; i+=4, p++){
+        const r = data[i], g=data[i+1], b=data[i+2];
+        const isGrass = g > 68 && g > r*1.08 && g > b*1.05;
+        mask[p] = isGrass ? 0 : 1;
+      }
+      // morphology lite
+      const eroded = new Uint8Array(mask.length);
+      for(let y=1;y<targetH-1;y++){
+        for(let x=1;x<targetW-1;x++){
+          let ok = 1;
+          for(let yy=-1;yy<=1 && ok;yy++) for(let xx=-1;xx<=1;xx++) if(!mask[(y+yy)*targetW + (x+xx)]) { ok = 0; break; }
+          eroded[y*targetW+x] = ok;
+        }
+      }
+      const dilated = new Uint8Array(mask.length);
+      for(let y=1;y<targetH-1;y++){
+        for(let x=1;x<targetW-1;x++){
+          let ok = 0;
+          for(let yy=-1;yy<=1 && !ok;yy++) for(let xx=-1;xx<=1;xx++) if(eroded[(y+yy)*targetW + (x+xx)]) { ok = 1; break; }
+          dilated[y*targetW+x] = ok;
+        }
+      }
+      const visited = new Uint8Array(mask.length);
+      const comps = [];
+      const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+      for(let y=0;y<targetH;y++){
+        for(let x=0;x<targetW;x++){
+          const idx = y*targetW+x;
+          if(!dilated[idx] || visited[idx]) continue;
+          let q = [[x,y]], qi=0;
+          visited[idx]=1;
+          let minX=x,maxX=x,minY=y,maxY=y,count=0,sumR=0,sumG=0,sumB=0;
+          while(qi<q.length){
+            const [cx,cy] = q[qi++];
+            const ii = cy*targetW+cx;
+            count++;
+            minX=Math.min(minX,cx); maxX=Math.max(maxX,cx); minY=Math.min(minY,cy); maxY=Math.max(maxY,cy);
+            const di = ii*4; sumR+=data[di]; sumG+=data[di+1]; sumB+=data[di+2];
+            for(const [dx,dy] of dirs){
+              const nx=cx+dx, ny=cy+dy;
+              if(nx<0||ny<0||nx>=targetW||ny>=targetH) continue;
+              const ni=ny*targetW+nx;
+              if(dilated[ni] && !visited[ni]){ visited[ni]=1; q.push([nx,ny]); }
+            }
+          }
+          const w=maxX-minX+1, h=maxY-minY+1;
+          if(count<8) continue;
+          comps.push({minX,maxX,minY,maxY,w,h,count,avgR:sumR/count,avgG:sumG/count,avgB:sumB/count});
+        }
+      }
+      const entities = [];
+      for(const c of comps){
+        const cx = (c.minX + c.maxX) / 2;
+        const footX = cx;
+        const footY = c.maxY;
+        const vx = footX / targetW * vw;
+        const vy = footY / targetH * vh;
+        const aspect = c.h / Math.max(1,c.w);
+        const area = c.w * c.h;
+        let type = 'player';
+        if(area < 120 && c.avgR > 155 && c.avgG > 155 && c.avgB > 155) type = 'ball';
+        if(area < 70 && c.avgR > c.avgG * 1.15 && c.avgR > c.avgB * 1.15) type = 'ball';
+        if(type === 'player' && !(aspect > 0.75 && area > 90 && area < 2200)) continue;
+        if(type === 'ball' && area > 320) continue;
+        let team = 'N';
+        if(type === 'player'){
+          if(c.avgB > c.avgR * 1.08) team = 'A';
+          else if(c.avgR > c.avgB * 1.08) team = 'B';
+        }
+        const mm = projectVideoPointToMiniMap(vx, vy);
+        entities.push({
+          id:uid(), type, team,
+          x:vx, y:vy, w:c.w/targetW*vw, h:c.h/targetH*vh,
+          miniX:mm.x, miniY:mm.y,
+          confidence: type==='ball' ? 0.68 : 0.74
+        });
+      }
+      const players = entities.filter(e=>e.type==='player').slice(0, 26);
+      const balls = entities.filter(e=>e.type==='ball').sort((a,b)=>a.w*a.h - b.w*b.h).slice(0, 1);
+      return [...players, ...balls];
+    }
+
+    function assignTracks(prevDets, currDets, nextTrackId){
+      const prevPlayers = prevDets.filter(d=>d.type==='player');
+      const used = new Set();
+      for(const d of currDets){
+        if(d.type === 'ball'){ d.trackId = 'ball'; continue; }
+        let best = null, bestDist = 999999;
+        for(const p of prevPlayers){
+          if(used.has(p.trackId)) continue;
+          const dd = Math.hypot((p.miniX||0)-(d.miniX||0), (p.miniY||0)-(d.miniY||0));
+          if(dd < bestDist){ bestDist = dd; best = p; }
+        }
+        if(best && bestDist < 110){ d.trackId = best.trackId; d.team = d.team==='N' ? best.team : d.team; used.add(best.trackId); }
+        else d.trackId = 'P' + nextTrackId();
+      }
+      return currDets;
+    }
+
+    function buildTrackStore(){
+      const store = {};
+      for(const frame of state.aiDetections){
+        for(const e of frame.entities || []){
+          if(e.type !== 'player') continue;
+          store[e.trackId] ||= {trackId:e.trackId, team:e.team||'N', points:[]};
+          store[e.trackId].points.push({time:frame.time, miniX:e.miniX, miniY:e.miniY, x:e.x, y:e.y});
+          if(store[e.trackId].team === 'N' && e.team && e.team !== 'N') store[e.trackId].team = e.team;
+        }
+      }
+      state.aiTracks = Object.values(store).filter(t=>t.points.length >= 2);
+    }
+
+    function inferPasses(forceRebuild){
+      if(!state.aiDetections?.length) return;
+      if(state.aiPasses?.length && !forceRebuild) return;
+      const passes = [];
+      let lastOwner = null;
+      for(const frame of state.aiDetections){
+        const ball = (frame.entities||[]).find(e=>e.type==='ball');
+        const players = (frame.entities||[]).filter(e=>e.type==='player');
+        if(!ball || !players.length) continue;
+        let owner = null, ownerDist = Infinity;
+        for(const p of players){
+          const d = Math.hypot((p.miniX||0)-(ball.miniX||0), (p.miniY||0)-(ball.miniY||0));
+          if(d < ownerDist){ ownerDist = d; owner = p; }
+        }
+        if(owner && ownerDist < 55){
+          if(lastOwner && lastOwner.trackId !== owner.trackId){
+            passes.push({
+              id: uid(),
+              time: frame.time,
+              from: lastOwner.trackId,
+              to: owner.trackId,
+              fromTeam: lastOwner.team || 'N',
+              toTeam: owner.team || 'N',
+              fromPos: {x:lastOwner.miniX, y:lastOwner.miniY},
+              toPos: {x:owner.miniX, y:owner.miniY}
+            });
+          }
+          lastOwner = owner;
+        }
+      }
+      state.aiPasses = passes.slice(0, 60);
+    }
+
+    function jumpAiMoment(dir){
+      const allMoments = (state.aiPasses||[]).map(p=>p.time).sort((a,b)=>a-b);
+      if(!allMoments.length) return alert('Chưa có tình huống AI');
+      if(aiNavIndex < 0){
+        aiNavIndex = 0;
+        for(let i=0;i<allMoments.length;i++) if(allMoments[i] >= (video.currentTime||0)) { aiNavIndex = i; break; }
+      } else aiNavIndex = (aiNavIndex + dir + allMoments.length) % allMoments.length;
+      jumpToTime(Math.max(0, allMoments[aiNavIndex] - 2));
+      video.play().catch(()=>{});
+      setTimeout(()=>video.pause(), 4000);
+    }
+
+    function projectVideoPointToMiniMap(x,y){
+      const pts = state.aiCalibration || [];
+      const W = miniMapCanvas.width, H = miniMapCanvas.height;
+      if(pts.length !== 4) return {x:(x/(video.videoWidth||1))*W, y:(y/(video.videoHeight||1))*H};
+      const src = pts.map(p=>[p.x, p.y]);
+      const dst = [[38,22],[W-38,22],[W-38,H-22],[38,H-22]];
+      const Hm = getPerspectiveTransform(src, dst);
+      return applyHomography(Hm, x, y);
+    }
+
+    function getPerspectiveTransform(src, dst){
+      const A = [], B = [];
+      for(let i=0;i<4;i++){
+        const [x,y] = src[i], [u,v] = dst[i];
+        A.push([x,y,1,0,0,0,-u*x,-u*y]); B.push(u);
+        A.push([0,0,0,x,y,1,-v*x,-v*y]); B.push(v);
+      }
+      const h = solveLinearSystem(A,B);
+      return [h[0],h[1],h[2],h[3],h[4],h[5],h[6],h[7],1];
+    }
+    function solveLinearSystem(A,b){
+      const n = b.length;
+      for(let i=0;i<n;i++){
+        let maxRow = i;
+        for(let k=i+1;k<n;k++) if(Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) maxRow = k;
+        [A[i],A[maxRow]]=[A[maxRow],A[i]]; [b[i],b[maxRow]]=[b[maxRow],b[i]];
+        const piv = A[i][i] || 1e-9;
+        for(let j=i;j<n;j++) A[i][j] /= piv;
+        b[i] /= piv;
+        for(let k=0;k<n;k++){
+          if(k===i) continue;
+          const f = A[k][i];
+          for(let j=i;j<n;j++) A[k][j] -= f * A[i][j];
+          b[k] -= f * b[i];
+        }
+      }
+      return b;
+    }
+    function applyHomography(Hm, x, y){
+      const w = Hm[6]*x + Hm[7]*y + Hm[8];
+      return {x:(Hm[0]*x + Hm[1]*y + Hm[2]) / w, y:(Hm[3]*x + Hm[4]*y + Hm[5]) / w};
+    }
+
+    function drawMiniMap(){
+      const c = miniCtx, W = miniMapCanvas.width, H = miniMapCanvas.height;
+      c.clearRect(0,0,W,H);
+      c.fillStyle = '#2b7d43'; c.fillRect(0,0,W,H);
+      c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = 4;
+      c.strokeRect(22,22,W-44,H-44);
+      c.beginPath(); c.moveTo(W/2,22); c.lineTo(W/2,H-22); c.stroke();
+      c.beginPath(); c.arc(W/2,H/2,56,0,Math.PI*2); c.stroke();
+      c.beginPath(); c.arc(W/2,H/2,4,0,Math.PI*2); c.fillStyle = '#fff'; c.fill();
+      c.strokeRect(22,H/2-82,78,164); c.strokeRect(W-100,H/2-82,78,164);
+      c.strokeRect(22,H/2-40,30,80); c.strokeRect(W-52,H/2-40,30,80);
+      const currentFrame = getClosestAiFrame(video.currentTime || 0);
+      const passes = (state.aiPasses||[]).filter(p=>Math.abs((p.time||0) - (video.currentTime||0)) < 4).slice(-3);
+      for(const p of passes){
+        c.save(); c.setLineDash([12,10]); c.strokeStyle = 'rgba(255,225,120,.95)'; c.lineWidth = 4;
+        c.beginPath(); c.moveTo(p.fromPos.x,p.fromPos.y); c.lineTo(p.toPos.x,p.toPos.y); c.stroke();
+        c.restore();
+        drawMiniArrow(c,p.fromPos.x,p.fromPos.y,p.toPos.x,p.toPos.y,'#ffe178',4);
+      }
+      for(const tr of (state.aiTracks||[])){
+        const pts = tr.points.filter(pt => Math.abs((pt.time||0) - (video.currentTime||0)) <= 10);
+        if(pts.length < 2) continue;
+        c.save(); c.setLineDash([10,8]); c.lineWidth = 2.5; c.strokeStyle = tr.team==='A' ? '#68b0ff' : tr.team==='B' ? '#ff7b8b' : '#ffffff';
+        c.beginPath(); c.moveTo(pts[0].miniX, pts[0].miniY);
+        for(let i=1;i<pts.length;i++) c.lineTo(pts[i].miniX, pts[i].miniY);
+        c.stroke(); c.restore();
+      }
+      for(const e of currentFrame?.entities || []){
+        if(e.type === 'ball'){
+          c.fillStyle = '#ffffff'; c.beginPath(); c.arc(e.miniX,e.miniY,6,0,Math.PI*2); c.fill();
+          c.strokeStyle = '#111'; c.lineWidth = 2; c.stroke();
+        } else {
+          c.fillStyle = e.team==='A' ? '#5aa8ff' : e.team==='B' ? '#ff6177' : '#f0f4ff';
+          c.beginPath(); c.arc(e.miniX,e.miniY,9,0,Math.PI*2); c.fill();
+          c.fillStyle = '#07111c'; c.font = '700 10px Inter, Arial'; c.textAlign = 'center'; c.textBaseline = 'middle';
+          const num = (e.trackId||'').replace('P','').slice(-2) || 'P';
+          c.fillText(num, e.miniX, e.miniY+0.5);
+        }
+      }
+    }
+    function drawMiniArrow(c,x1,y1,x2,y2,color,width){
+      c.save();
+      c.strokeStyle=color; c.fillStyle=color; c.lineWidth=width;
+      c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+      const angle=Math.atan2(y2-y1,x2-x1), head=10+width;
+      c.beginPath(); c.moveTo(x2,y2);
+      c.lineTo(x2-head*Math.cos(angle-Math.PI/7), y2-head*Math.sin(angle-Math.PI/7));
+      c.lineTo(x2-head*Math.cos(angle+Math.PI/7), y2-head*Math.sin(angle+Math.PI/7));
+      c.closePath(); c.fill(); c.restore();
+    }
+    function getClosestAiFrame(time){
+      let best = null, bestDiff = Infinity;
+      for(const f of (state.aiDetections||[])){
+        const d = Math.abs((f.time||0) - time);
+        if(d < bestDiff){ best = f; bestDiff = d; }
+      }
+      return best;
+    }
+    function renderPassList(){
+      const list = document.getElementById('aiPassList');
+      const passes = state.aiPasses || [];
+      if(!passes.length){ list.innerHTML = '<div class="ai-card muted">Chưa có đường chuyền giả lập. Sau khi AI detect xong, bấm “Tạo đường chuyền giả lập” nếu cần làm mới.</div>'; return; }
+      list.innerHTML = passes.slice(0,18).map((p,idx)=>`
+        <div class="ai-card">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong>Pass #${idx+1}</strong><span class="badge blue">${formatTime(p.time||0)}</span></div>
+          <div class="muted" style="margin-top:8px">${escapeHtml(p.from||'')} → ${escapeHtml(p.to||'')} • Team ${escapeHtml(p.fromTeam||'N')}</div>
+          <div style="margin-top:10px"><button class="btn small" onclick="jumpToTime(${Math.max(0, Number(p.time||0)-2)})">Xem lại tình huống</button></div>
+        </div>
+      `).join('');
+    }
+    function updateAiMetrics(){
+      document.getElementById('aiCalibCount').textContent = `${(state.aiCalibration||[]).length}/4`;
+      document.getElementById('aiTrackCount').textContent = String((state.aiTracks||[]).length);
+      document.getElementById('aiPassCount').textContent = String((state.aiPasses||[]).length);
+    }
+
+    document.getElementById('captureFrameBtn').onclick = ()=>{
+      if(!video.src) return alert('Hãy tải video trước');
+      const snap = makeSnapshot();
+      state.clips.unshift({id:uid(),type:'snapshot',time:video.currentTime,image:snap,note:'Snapshot tại '+formatTime(video.currentTime)});
+      saveState(); renderClips(); updateMarkers();
+    };
+    document.getElementById('addMarkerBtn').onclick = ()=>{
+      if(!video.duration) return alert('Chưa có video');
+      state.markers.push({id:uid(),time:video.currentTime}); saveState(); updateMarkers(); renderAll();
+    };
+    function makeSnapshot(){
+      const out = document.createElement('canvas');
+      out.width = video.videoWidth || 1280; out.height = video.videoHeight || 720;
+      const octx = out.getContext('2d');
+      octx.drawImage(video,0,0,out.width,out.height);
+      if(canvas.width && canvas.height){
+        octx.drawImage(canvas,0,0,out.width,out.height);
+      }
+      return out.toDataURL('image/png');
+    }
+    function updateMarkers(){
+      markerLayer.innerHTML = '';
+      const dur = video.duration || 0;
+      state.markers.forEach(m=>{
+        if(!dur) return;
+        const el = document.createElement('div'); el.className='marker';
+        el.style.left = `calc(${(m.time/dur)*100}% - 2px)`; markerLayer.appendChild(el);
+      });
+      document.getElementById('markerCount').textContent = state.markers.length;
+      document.getElementById('snapshotCount').textContent = state.clips.filter(c=>c.type==='snapshot').length;
+    }
+
+    function renderClips(){
+      document.getElementById('clipCountBadge').textContent = state.clips.length + ' items';
+      const list = document.getElementById('clipList');
+      if(!state.clips.length){ list.innerHTML = '<div class="list-card muted">Chưa có snapshot hoặc clip.</div>'; return; }
+      list.innerHTML = state.clips.map(c=>`
+        <div class="clip-item">
+          <div class="clip-head"><strong>${c.type==='snapshot'?'Snapshot':'Clip'}</strong><span class="badge blue">${formatTime(c.time||0)}</span></div>
+          ${c.image ? `<img src="${c.image}" alt="snapshot" style="margin-top:10px;border-radius:14px;border:1px solid rgba(255,255,255,.08)">` : ''}
+          <div class="muted" style="margin-top:10px">${escapeHtml(c.note||'')}</div>
+          <div class="player-actions no-print" style="margin-top:12px">
+            <button class="btn small" onclick="jumpToTime(${Number(c.time||0)})">Mở lại mốc này</button>
+            <button class="btn small danger" onclick="removeClip('${c.id}')">Xóa</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    window.jumpToTime = function(sec){ switchTab('analysis'); video.currentTime = sec; video.pause(); drawMiniMap(); redrawAnnotations(); };
+    window.removeClip = function(id){ state.clips = state.clips.filter(c=>c.id!==id); saveState(); renderAll(); };
+
+    // Export/import/reset
+    document.getElementById('exportJsonBtn').onclick = ()=>{
+      const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'coachboard-pro-plus-data.json'; a.click();
+    };
+    document.getElementById('importJsonInput').addEventListener('change', async e=>{
+      const file = e.target.files?.[0]; if(!file) return;
+      try{
+        const txt = await file.text();
+        const parsed = JSON.parse(txt);
+        state = Object.assign(structuredClone(defaultState), parsed); saveState(); renderAll(); alert('Đã nhập dữ liệu');
+      }catch(err){ alert('File JSON không hợp lệ'); }
+    });
+    document.getElementById('resetAllBtn').onclick = ()=>{
+      if(!confirm('Xóa toàn bộ dữ liệu đã lưu?')) return;
+      state = structuredClone(defaultState); saveState(); renderAll(); tempShapes=[]; redrawAnnotations();
+    };
+
+    document.getElementById('exportPdfBtn').onclick = ()=>{
+      const win = window.open('', '_blank');
+      const playersTable = state.players.map((p,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.number||'')}</td><td>${escapeHtml(p.position||'')}</td><td>${escapeHtml(p.note||'')}</td></tr>`).join('') || '<tr><td colspan="5">Chưa có dữ liệu</td></tr>';
+      const trainingRows = state.trainings.map((t,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(t.title)}</td><td>${escapeHtml(t.focus||'')}</td><td>${escapeHtml(t.duration||'')}</td></tr>`).join('') || '<tr><td colspan="4">Chưa có dữ liệu</td></tr>';
+      const matchRows = state.matches.map((m,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(m.opponent)}</td><td>${escapeHtml(m.date||'')}</td><td>${escapeHtml(m.score||'')}</td></tr>`).join('') || '<tr><td colspan="4">Chưa có dữ liệu</td></tr>';
+      const scheduleRows = [...state.events].sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).map((e,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(e.title)}</td><td>${escapeHtml(e.type)}</td><td>${escapeHtml(fmtDateTime(e.date,e.time))}</td></tr>`).join('') || '<tr><td colspan="4">Chưa có dữ liệu</td></tr>';
+      win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>CoachBoard Report</title><style>
+        body{font-family:Arial,sans-serif;padding:24px;color:#111} h1{margin:0 0 8px} h2{margin:26px 0 10px}
+        .muted{color:#666} .box{padding:14px;border:1px solid #ddd;border-radius:12px;margin-bottom:14px}
+        table{width:100%;border-collapse:collapse} th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px} th{background:#f4f6f8}
+      </style></head><body>
+        <h1>CoachBoard Pro Plus - Báo cáo đội bóng</h1>
+        <div class="muted">Xuất lúc: ${new Date().toLocaleString('vi-VN')}</div>
+        <div class="box"><strong>Ghi chú HLV</strong><div style="margin-top:8px;white-space:pre-wrap">${escapeHtml(state.coachNote || 'Chưa có ghi chú')}</div></div>
+        <h2>Tổng quan</h2>
+        <div class="box">Cầu thủ: ${state.players.length} • Buổi tập: ${state.trainings.length} • Trận đấu: ${state.matches.length} • Sự kiện: ${state.events.length} • Snapshot/Clip: ${state.clips.length}</div>
+        <h2>Danh sách cầu thủ</h2><table><thead><tr><th>#</th><th>Tên</th><th>Số áo</th><th>Vị trí</th><th>Ghi chú</th></tr></thead><tbody>${playersTable}</tbody></table>
+        <h2>Lịch đội bóng</h2><table><thead><tr><th>#</th><th>Sự kiện</th><th>Loại</th><th>Thời gian</th></tr></thead><tbody>${scheduleRows}</tbody></table>
+        <h2>Giáo án</h2><table><thead><tr><th>#</th><th>Buổi tập</th><th>Trọng tâm</th><th>Thời lượng</th></tr></thead><tbody>${trainingRows}</tbody></table>
+        <h2>Trận đấu</h2><table><thead><tr><th>#</th><th>Đối thủ</th><th>Ngày</th><th>Tỷ số</th></tr></thead><tbody>${matchRows}</tbody></table>
+        <script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script>
+      </body></html>`);
+      win.document.close();
+    };
+
+    function fileToDataUrl(file){
+      return new Promise((resolve,reject)=>{
+        const fr = new FileReader(); fr.onload=()=>resolve(fr.result); fr.onerror=reject; fr.readAsDataURL(file);
+      });
+    }
+
+    function renderStats(){
+      document.getElementById('statPlayers').textContent = state.players.length;
+      document.getElementById('statTrainings').textContent = state.trainings.length;
+      document.getElementById('statMatches').textContent = state.matches.length;
+      document.getElementById('statClips').textContent = state.clips.length;
+      document.getElementById('coachNote').value = state.coachNote || '';
+    }
+    function renderAll(){
+      renderStats(); renderPlayers(); renderCalendar(); renderTrainings(); renderMatches(); renderClips(); renderBench(); renderFieldTokens(); renderTacticalQuickSlots(); renderFramesList(); syncSelectedObjectControls(); updateMarkers(); redrawFieldAnnotations(); updateAiMetrics(); renderPassList(); drawMiniMap();
+    }
+
+    renderAll();
+    syncPieceControls();
+    renderTeamStyles();
+    renderTemplateList();
+    updateVideoModeUI();
+    updatePlayPauseBtn();
+    document.getElementById('aiSampleStep').value = state.aiSettings?.sampleStep || 0.6;
+    document.getElementById('aiMaxFrames').value = state.aiSettings?.maxFrames || 180;
+    switchTab('dashboard');
+  </script>
+</body>
+</html>
